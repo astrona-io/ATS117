@@ -1,0 +1,341 @@
+# Course manifest for ATS117 - Enterprise Operations, Auto-Unseal & HA
+# Clusters (OpenBao).
+#
+# One entry per section under `modules:`. Each section lists, in order: its
+# README, then for each module the landing page (course.md), its parts
+# (course-0N-*.md), and right after the part a lab tests, the lab's
+# question.md reading and the `type: lab` entry. The module's summary page
+# comes last. The section capstone closes the section. Playgrounds are not
+# listed: the landing page's playground marker shows them. solution.md is
+# never listed.
+#
+# Every `path:` is relative to this file.
+
+training:
+  id: ATS117
+  title: "OpenBao: Enterprise Operations, Auto-Unseal & HA Clusters"
+  maturity: draft
+  description: >
+    Training material covering the Enterprise Operations, Auto-Unseal & HA
+    Clusters domain of the OpenBao training path: a three-node cluster on
+    Integrated Storage (Raft), quorum and autopilot, Transit and static
+    auto-unseal, cloud KMS plugins, seal migration, telemetry with
+    Prometheus and the health endpoint, Raft snapshots and restore, and
+    rolling upgrades. Each module pairs a layered reader with an ungraded
+    hands-on playground and a graded practice lab. Each section closes with
+    an integration capstone.
+    Written for OpenBao v2.7.1.
+
+  certification:
+    name: OpenBao
+    code: OPENBAO
+    provider: Astrona
+    domain: Enterprise Operations, Auto-Unseal & HA Clusters
+    weight: 15
+
+modules:
+
+  - id: module-intro
+    title: "Introduction"
+    description: >
+      Start here. What this course trains you to do, how it is laid out, how
+      to get your machine ready with the astrona command-line tool, how the
+      content is written and checked, who maintains it, and how to report a
+      mistake.
+
+    content:
+      - type: reading
+        title: Introduction
+        path: sections/intro/README.md
+      - type: reading
+        title: "Welcome To The Course"
+        path: sections/intro/course-01-welcome.md
+      - type: reading
+        title: "Get Your Machine Ready"
+        path: sections/intro/course-02-get-your-machine-ready.md
+      - type: reading
+        title: "How This Course Is Made"
+        path: sections/intro/course-03-how-this-course-is-made.md
+
+  - id: module-010
+    title: "High Availability With Integrated Storage"
+    description: >
+      Run OpenBao as a three-node cluster on Integrated Storage: Raft, voters
+      and quorum, joining nodes with retry_join, autopilot, leader election,
+      standby reads and request forwarding, and what to do when quorum is
+      lost.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-010/README.md
+
+      - type: reading
+        title: "Run OpenBao As A Raft Cluster"
+        path: sections/section-010/module-01/course.md
+      - type: reading
+        title: "Raft, Voters And Quorum"
+        path: sections/section-010/module-01/course-01-raft-voters-and-quorum.md
+      - type: reading
+        title: "Joining Nodes And Autopilot"
+        path: sections/section-010/module-01/course-02-joining-nodes-and-autopilot.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Join The Third Node And Configure Autopilot Lab"
+        path: sections/section-010/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: high-availability
+        task_kind: troubleshooting
+        tags: [raft, retry-join, list-peers, autopilot, quorum, standby]
+        learning_goals:
+          - Find why a node is missing from the Raft configuration and bring it in as a voter
+          - Configure autopilot to remove dead servers while keeping a minimum quorum
+          - Prove the cluster keeps accepting writes when the leader pod is lost
+        resources:
+          - name: "Integrated Storage"
+            url: https://openbao.org/docs/concepts/integrated-storage/
+          - name: "Autopilot"
+            url: https://openbao.org/docs/concepts/integrated-storage/autopilot/
+          - name: "operator raft"
+            url: https://openbao.org/docs/commands/operator/raft/
+      - type: reading
+        title: "Failover, Standbys And Lost Quorum"
+        path: sections/section-010/module-01/course-03-failover-standbys-and-lost-quorum.md
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-010/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Restore Quorum And Remove A Dead Peer Capstone"
+        path: sections/section-010/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 35m
+        topic: high-availability
+        task_kind: troubleshooting
+        tags: [raft, quorum, list-peers, remove-peer, autopilot, standby]
+        learning_goals:
+          - Recognise a cluster that lost quorum and bring enough voters back to elect a leader
+          - Remove a dead peer from the Raft configuration
+          - Configure autopilot so dead servers are cleaned up in future
+        resources:
+          - name: "Integrated Storage: quorum lost"
+            url: https://openbao.org/docs/concepts/integrated-storage/
+          - name: "High availability"
+            url: https://openbao.org/docs/concepts/ha/
+
+  - id: module-020
+    title: "Auto-Unseal"
+    description: >
+      Unseal OpenBao without people entering key shares: recovery keys, the
+      Transit seal backed by a second OpenBao, the static seal, cloud KMS
+      seals as plugins, and migrating a running cluster from Shamir to
+      Transit.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-020/README.md
+
+      - type: reading
+        title: "Unseal OpenBao Automatically"
+        path: sections/section-020/module-01/course.md
+      - type: reading
+        title: "Seals, Auto-Unseal And Recovery Keys"
+        path: sections/section-020/module-01/course-01-seals-and-recovery-keys.md
+      - type: reading
+        title: "The Transit Seal"
+        path: sections/section-020/module-01/course-02-the-transit-seal.md
+      - type: reading
+        title: "Migrating From Shamir To Transit"
+        path: sections/section-020/module-01/course-03-migrating-from-shamir-to-transit.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Migrate The Cluster From Shamir To Transit Auto-Unseal Lab"
+        path: sections/section-020/module-01/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 30m
+        topic: auto-unseal
+        task_kind: migration
+        tags: [transit-seal, seal-migration, recovery-keys, step-down, ondelete, helm-chart]
+        learning_goals:
+          - Add a Transit seal to the cluster configuration with its token from a Kubernetes Secret
+          - Migrate every node with unseal -migrate, standbys first and the leader last
+          - Prove that a restarted pod unseals itself and the data survived
+        resources:
+          - name: "Seal concepts and seal migration"
+            url: https://openbao.org/docs/concepts/seal/
+          - name: "Transit seal"
+            url: https://openbao.org/docs/configuration/seal/transit/
+          - name: "operator unseal"
+            url: https://openbao.org/docs/commands/operator/unseal/
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-020/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Transit Seal That Stopped Working Capstone"
+        path: sections/section-020/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 35m
+        topic: auto-unseal
+        task_kind: troubleshooting
+        tags: [transit-seal, periodic-token, recovery-keys, ondelete, helm-chart, step-down]
+        learning_goals:
+          - Find why a pod cannot auto-unseal from its log and the unsealer
+          - Replace a revoked seal token with an orphan, periodic, least-privilege token
+          - Fix the seal configuration and roll it out so every pod unseals itself
+        resources:
+          - name: "Transit seal: authentication"
+            url: https://openbao.org/docs/configuration/seal/transit/
+          - name: "Tokens"
+            url: https://openbao.org/docs/concepts/tokens/
+
+  - id: module-030
+    title: "Telemetry And Monitoring"
+    description: >
+      Make OpenBao report its own health: the telemetry stanza, the metrics
+      endpoint without a token, scraping every node with Prometheus, the key
+      metrics to watch, alerting on a sealed node, and the health endpoint
+      for load balancers.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-030/README.md
+
+      - type: reading
+        title: "Monitor An OpenBao Cluster"
+        path: sections/section-030/module-01/course.md
+      - type: reading
+        title: "Telemetry And The Metrics Endpoint"
+        path: sections/section-030/module-01/course-01-telemetry-and-the-metrics-endpoint.md
+      - type: reading
+        title: "Scraping Every Node With Prometheus"
+        path: sections/section-030/module-01/course-02-scraping-every-node-with-prometheus.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Scrape Every Node With Prometheus Lab"
+        path: sections/section-030/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: telemetry
+        task_kind: build
+        tags: [telemetry, prometheus, metrics, ondelete, helm-chart, step-down]
+        learning_goals:
+          - Turn on telemetry and unauthenticated metrics access in the server configuration
+          - Roll the change out with a rolling restart that keeps quorum
+          - Prove that Prometheus scrapes all three pods and sees them unsealed
+        resources:
+          - name: "Telemetry configuration"
+            url: https://openbao.org/docs/configuration/telemetry/
+          - name: "Telemetry and metrics"
+            url: https://openbao.org/docs/internals/telemetry/
+      - type: reading
+        title: "Key Metrics And The Health Endpoint"
+        path: sections/section-030/module-01/course-03-key-metrics-and-the-health-endpoint.md
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-030/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Alert When A Node Is Sealed Capstone"
+        path: sections/section-030/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 35m
+        topic: telemetry
+        task_kind: troubleshooting
+        tags: [prometheus, metrics, alerting, telemetry, health-endpoint]
+        learning_goals:
+          - Fix a scrape configuration that reaches only one node in the wrong format
+          - Write an alert rule that fires when any node is sealed or stops answering
+          - Prove the alert fires when a pod restarts sealed
+        resources:
+          - name: "Core system metrics"
+            url: https://openbao.org/docs/internals/telemetry/metrics/core-system/
+          - name: "Health endpoint"
+            url: https://openbao.org/docs/api/system/health/
+
+  - id: module-040
+    title: "Snapshots, Backup And Upgrades"
+    description: >
+      Keep the data safe and the version current: Raft snapshots, what a
+      snapshot needs to be usable, restoring and what a restore rolls back,
+      and rolling upgrades with the OnDelete strategy.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-040/README.md
+
+      - type: reading
+        title: "Back Up, Restore And Upgrade OpenBao"
+        path: sections/section-040/module-01/course.md
+      - type: reading
+        title: "Raft Snapshots"
+        path: sections/section-040/module-01/course-01-raft-snapshots.md
+      - type: reading
+        title: "Restoring A Snapshot"
+        path: sections/section-040/module-01/course-02-restoring-a-snapshot.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Restore A Deleted Secret From A Snapshot Lab"
+        path: sections/section-040/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: backup
+        task_kind: troubleshooting
+        tags: [raft-snapshot, restore, raft, quorum]
+        learning_goals:
+          - Restore a Raft snapshot into a running cluster
+          - Keep a change made after the snapshot that the restore rolls back
+          - Prove the deleted secret is back and the cluster is healthy
+        resources:
+          - name: "operator raft snapshot"
+            url: https://openbao.org/docs/commands/operator/raft/
+          - name: "Raft storage API: snapshots"
+            url: https://openbao.org/docs/api/system/storage/raft/
+      - type: reading
+        title: "Rolling Upgrades"
+        path: sections/section-040/module-01/course-03-rolling-upgrades.md
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-040/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Upgrade The Cluster From 2.7.0 To 2.7.1 Safely Capstone"
+        path: sections/section-040/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 40m
+        topic: upgrades
+        task_kind: migration
+        tags: [rolling-upgrade, raft-snapshot, ondelete, step-down, helm-chart, quorum]
+        learning_goals:
+          - Take and keep a snapshot before an upgrade
+          - Upgrade every pod with a rolling restart, standbys first and the leader last
+          - Prove every node runs the new version with its data and quorum intact
+        resources:
+          - name: "Helm chart: upgrading OpenBao on Kubernetes"
+            url: https://openbao.org/docs/platform/k8s/helm/
+          - name: "operator step-down"
+            url: https://openbao.org/docs/commands/operator/step-down/

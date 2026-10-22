@@ -1,0 +1,57 @@
+# Helm values for the ATS117 OpenBao cluster: OpenBao v2.7.1 (chart openbao
+# 0.30.4), three pods with Integrated Storage (Raft), no TLS (lab-only).
+# Pods find each other through retry_join on the headless Service
+# openbao-internal; node IDs are the pod names.
+fullnameOverride: openbao
+injector:
+  enabled: false
+server:
+  image:
+    tag: "2.7.1"
+  dataStorage:
+    enabled: true
+    size: 1Gi
+  # The Transit seal reads its token from BAO_TOKEN (recommended over
+  # putting the token in the configuration file).
+  extraSecretEnvironmentVars:
+    - envName: BAO_TOKEN
+      secretName: transit-seal-token
+      secretKey: token
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+
+        listener "tcp" {
+          tls_disable     = 1
+          address         = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        storage "raft" {
+          path = "/openbao/data"
+
+          retry_join {
+            leader_api_addr = "http://openbao-0.openbao-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://openbao-1.openbao-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://openbao-2.openbao-internal:8200"
+          }
+        }
+
+        seal "transit" {
+          address    = "http://unsealer.unsealer.svc.cluster.local:8200"
+          key_name   = "autounseal"
+          mount_path = "transit/"
+        }
+
+        service_registration "kubernetes" {}
+ui:
+  enabled: true

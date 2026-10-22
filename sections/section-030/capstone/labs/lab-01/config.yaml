@@ -1,0 +1,60 @@
+# Alert When A Node Is Sealed
+# Astrona graded capstone. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-117-capstone-030"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-openbao"
+      description: "Installs Helm 3.22.1, the bao CLI 2.7.1, the CoreDNS rewrite, the tester pod and the OpenBao cluster (chart 0.30.4)"
+      type: "file"
+      source: "bootstrap/01-install-openbao.sh"
+    - name: "ats-117-capstone-030-setup"
+      description: "Creates the starting state the task works from"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The tester pod (namespace clients)."
+      type: "file"
+      source: "manifests/lab-start.yaml"
+
+testing:
+  init:
+    - name: "wait-for-openbao"
+      description: "Waits until the cluster and the starting state are ready"
+      type: "file"
+      source: "testing/wait-for-openbao.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-prometheus-targets"
+      description: "Confirms Prometheus scrapes all three OpenBao pods successfully"
+      type: "file"
+      source: "validation/validate-prometheus-targets.sh"
+    - name: "validate-alert-rule"
+      description: "Confirms Prometheus loaded the alert OpenBaoNodeSealed based on vault_core_unsealed"
+      type: "file"
+      source: "validation/validate-alert-rule.sh"
+    - name: "validate-alert-fires"
+      description: "Seals openbao-2 by restarting it and confirms the alert fires, then unseals it again"
+      type: "file"
+      source: "validation/validate-alert-fires.sh"
+    - name: "validate-data-kept"
+      description: "Confirms the original data is still there"
+      type: "file"
+      source: "validation/validate-data-kept.sh"
+
+teardown:
+  keepCluster: false

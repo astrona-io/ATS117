@@ -1,0 +1,60 @@
+# Scrape Every Node With Prometheus
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-117-lab-030-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+
+bootstrap:
+  init:
+    - name: "install-openbao"
+      description: "Installs Helm 3.22.1, the bao CLI 2.7.1, the CoreDNS rewrite, the tester pod and the OpenBao cluster (chart 0.30.4)"
+      type: "file"
+      source: "bootstrap/01-install-openbao.sh"
+    - name: "ats-117-lab-030-01-setup"
+      description: "Creates the starting state the task works from"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The tester pod (namespace clients)."
+      type: "file"
+      source: "manifests/lab-start.yaml"
+
+testing:
+  init:
+    - name: "wait-for-openbao"
+      description: "Waits until the cluster and the starting state are ready"
+      type: "file"
+      source: "testing/wait-for-openbao.sh"
+    - name: "reference-solution"
+      description: "The remediation a correct learner performs; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+
+validation:
+  scripts:
+    - name: "validate-metrics-endpoint"
+      description: "Confirms every pod serves Prometheus metrics without a token"
+      type: "file"
+      source: "validation/validate-metrics-endpoint.sh"
+    - name: "validate-prometheus-targets"
+      description: "Confirms Prometheus scrapes all three OpenBao pods successfully"
+      type: "file"
+      source: "validation/validate-prometheus-targets.sh"
+    - name: "validate-unsealed-metric"
+      description: "Confirms Prometheus holds vault_core_unsealed = 1 for three pods"
+      type: "file"
+      source: "validation/validate-unsealed-metric.sh"
+    - name: "validate-data-kept"
+      description: "Confirms the data written before the change is still there"
+      type: "file"
+      source: "validation/validate-data-kept.sh"
+
+teardown:
+  keepCluster: false
