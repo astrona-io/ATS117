@@ -33,7 +33,9 @@ sleep 15
 bao_on openbao-0 operator raft list-peers
 ```
 
-Once `openbao-1` is unsealed it is ready, so the StatefulSet creates `openbao-2`, which starts sealed. The `until` loop waits until the pod exists, and `kubectl wait` until its container runs. Now three of four voters answer, they elect a leader, and `list-peers` works. It shows four peers: `openbao-0` to `openbao-2`, and `openbao-3`, which no longer exists.
+Once `openbao-1` is unsealed it is ready, so the StatefulSet creates `openbao-2`, which starts sealed. The `until` loop waits until the pod exists, and `kubectl wait` until its container runs.
+
+Now three of four voters answer, they elect a leader, and `list-peers` works. It shows four peers: `openbao-0` to `openbao-2`, and `openbao-3`, which no longer exists.
 
 ## Step 4: Remove the dead peer
 
