@@ -174,9 +174,15 @@ init_cluster() {
     unseal_pod openbao-0
   fi
   wait_leader openbao-0
+  # The StatefulSet starts its pods one at a time (OrderedReady): openbao-1
+  # appears only after openbao-0 is ready, openbao-2 after openbao-1. Wait
+  # for each pod the StatefulSet should run before unsealing it.
+  local replicas
+  replicas="$(kubectl -n "$NS" get statefulset openbao -o jsonpath='{.spec.replicas}')"
   for pod in openbao-1 openbao-2; do
-    kubectl -n "$NS" get pod "$pod" >/dev/null 2>&1 || continue
+    [ "${pod#openbao-}" -lt "${replicas:-1}" ] || continue
     case " ${SKIP_UNSEAL:-} " in *" $pod "*) continue ;; esac
+    wait_started "$pod"
     if [ "$mode" = "shamir" ]; then unseal_pod "$pod"; fi
   done
   wait_voters "$voters"
