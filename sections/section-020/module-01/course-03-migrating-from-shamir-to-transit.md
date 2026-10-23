@@ -36,6 +36,12 @@ server:
   # The chart allows one pod per node by default; the kind cluster has a
   # single node, so switch that off or openbao-1 and openbao-2 never start.
   affinity: ""
+  # Create and replace pods without waiting for the one before to be Ready.
+  # A sealed or migrating pod is never Ready, so with the chart's default,
+  # OrderedReady, a restarted openbao-2 would wait for openbao-1 forever.
+  # Kubernetes cannot change this on an existing StatefulSet, so every values
+  # file sets it.
+  podManagementPolicy: Parallel
   image:
     tag: "2.7.1"
   dataStorage:

@@ -141,9 +141,15 @@ json_field() {
 is_sealed() { [ "$(seal_status "$1" | json_field sealed)" != "false" ]; }
 
 unseal_pod() {
-  # unseal_pod POD: enters the lab-only Shamir key on POD, if it is sealed.
+  # unseal_pod POD: enters the lab-only Shamir key on POD, if it is sealed. A
+  # pod that joins through retry_join reports initialized only after it has
+  # reached the leader; before that the unseal answers "not initialized".
   local pod="$1"
   wait_started "$pod"
+  for _ in $(seq 1 60); do
+    [ "$(seal_status "$pod" | json_field initialized)" = "true" ] && break
+    sleep 5
+  done
   if is_sealed "$pod"; then
     kubectl -n "$NS" exec -i "$pod" -- env BAO_ADDR=http://127.0.0.1:8200 bao operator unseal "$(unseal_key)" >/dev/null
   fi
@@ -174,9 +180,8 @@ init_cluster() {
     unseal_pod openbao-0
   fi
   wait_leader openbao-0
-  # The StatefulSet starts its pods one at a time (OrderedReady): openbao-1
-  # appears only after openbao-0 is ready, openbao-2 after openbao-1. Wait
-  # for each pod the StatefulSet should run before unsealing it.
+  # The StatefulSet starts its pods in parallel (podManagementPolicy:
+  # Parallel). Wait for each pod it should run before unsealing it.
   local replicas
   replicas="$(kubectl -n "$NS" get statefulset openbao -o jsonpath='{.spec.replicas}')"
   for pod in openbao-1 openbao-2; do
@@ -389,6 +394,12 @@ server:
   # The chart allows one pod per node by default; the kind cluster has a
   # single node, so switch that off or openbao-1 and openbao-2 never start.
   affinity: ""
+  # Create and replace pods without waiting for the one before to be Ready.
+  # A sealed or migrating pod is never Ready, so with the chart's default,
+  # OrderedReady, a restarted openbao-2 would wait for openbao-1 forever.
+  # Kubernetes cannot change this on an existing StatefulSet, so every values
+  # file sets it.
+  podManagementPolicy: Parallel
   image:
     tag: "2.7.1"
   dataStorage:
