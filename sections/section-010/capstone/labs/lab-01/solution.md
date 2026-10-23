@@ -13,7 +13,7 @@ kubectl -n openbao get pods
 for pod in openbao-0 openbao-1 openbao-2; do echo "== $pod"; bao_on "$pod" status | grep -E 'Sealed|HA Mode|Active Node'; done
 ```
 
-`openbao-0` is unsealed but has no active node: it waits for an election it cannot win. `openbao-1` and `openbao-2` are sealed, because they restarted and the cluster uses the Shamir seal.
+`openbao-0` is unsealed but has no active node: it waits for an election it cannot win. `openbao-1` is sealed, because it restarted and the cluster uses the Shamir seal. `openbao-2` does not run yet, so its `status` fails: the StatefulSet starts its pods in order and creates `openbao-2` only when `openbao-1` is ready, and a sealed pod is never ready.
 
 ## Step 2: Work out the quorum
 
@@ -26,12 +26,14 @@ You cannot read `list-peers` yet, because it needs a leader. Bringing the two se
 ```sh
 KEY="$(kubectl -n openbao get secret openbao-init -o jsonpath='{.data.unseal-key}' | base64 -d)"
 bao_on openbao-1 operator unseal "$KEY"
+until kubectl -n openbao get pod openbao-2 >/dev/null 2>&1; do sleep 5; done
+kubectl -n openbao wait --for=jsonpath='{.status.containerStatuses[0].started}'=true pod/openbao-2 --timeout=300s
 bao_on openbao-2 operator unseal "$KEY"
 sleep 15
 bao_on openbao-0 operator raft list-peers
 ```
 
-Now three of four voters answer, they elect a leader, and `list-peers` works. It shows four peers: `openbao-0` to `openbao-2`, and `openbao-3`, which no longer exists.
+Once `openbao-1` is unsealed it is ready, so the StatefulSet creates `openbao-2`, which starts sealed. The `until` loop waits until the pod exists, and `kubectl wait` until its container runs. Now three of four voters answer, they elect a leader, and `list-peers` works. It shows four peers: `openbao-0` to `openbao-2`, and `openbao-3`, which no longer exists.
 
 ## Step 4: Remove the dead peer
 

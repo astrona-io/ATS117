@@ -388,6 +388,7 @@ install_openbao "$(manifest_dir)/openbao-ha-shamir.yaml" --set server.ha.replica
 kubectl -n "$NS" wait --for=delete pod/openbao-3 --timeout=180s || true
 # Two nodes restart and come back sealed: 1 of 4 voters is alive, no quorum.
 kubectl -n "$NS" delete pod openbao-1 openbao-2 --wait=true
+# The StatefulSet recreates the pods in order (OrderedReady): openbao-2 comes
+# back only after openbao-1 is ready, that is unsealed. Wait for openbao-1 only.
 wait_started openbao-1
-wait_started openbao-2
 log "Starting state ready: no quorum, a dead peer openbao-3 in the configuration."
