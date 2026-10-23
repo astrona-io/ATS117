@@ -386,6 +386,9 @@ fullnameOverride: openbao
 injector:
   enabled: false
 server:
+  # The chart allows one pod per node by default; the kind cluster has a
+  # single node, so switch that off or openbao-1 and openbao-2 never start.
+  affinity: ""
   image:
     tag: "2.7.1"
   dataStorage:
