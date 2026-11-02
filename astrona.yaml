@@ -30,8 +30,6 @@ training:
     name: OpenBao
     code: OPENBAO
     provider: Astrona
-    domain: Enterprise Operations, Auto-Unseal & HA Clusters
-    weight: 15
 
 modules:
 
