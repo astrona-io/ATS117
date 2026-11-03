@@ -1,0 +1,245 @@
+# Knowledge check for section 020. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats117-020
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-020
+  title: "Auto-Unseal"
+placement:
+  position: after
+  reading: sections/section-020/capstone/labs/lab-01/question.md
+questions:
+  - id: ats117-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what the seal protects"
+    source_readings:
+      - sections/section-020/module-01/course-01-seals-and-recovery-keys.md
+    prompt: "Which key does the seal protect?"
+    options:
+      - id: a
+        text: "The Kubernetes Secret that holds the root token."
+        explanation: "Not correct. The seal does not protect Kubernetes Secrets."
+      - id: b
+        text: "The TLS certificate of the listener."
+        explanation: "Not correct. TLS is a separate setting."
+      - id: c
+        text: "The root key, which encrypts the keyring."
+        explanation: "Correct. A sealed server has its data but not the root key."
+      - id: d
+        text: "The Raft log files on disk."
+        explanation: "Not correct. They are encrypted by the keyring, not by the seal directly."
+    correct_option: c
+    explanation: "Correct. A sealed server has its data but not the root key."
+
+  - id: ats117-020-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain recovery keys"
+    source_readings:
+      - sections/section-020/module-01/course-01-seals-and-recovery-keys.md
+    prompt: "After a cluster is initialized with auto-unseal, what can recovery keys do?"
+    options:
+      - id: a
+        text: "Authorize operations such as generating a root token, but not unseal."
+        explanation: "Correct. The key service does the unsealing."
+      - id: b
+        text: "Unseal the cluster if the key service is gone."
+        explanation: "Not correct. Recovery keys cannot unseal."
+      - id: c
+        text: "Decrypt a Raft snapshot without the seal key."
+        explanation: "Not correct. They are not a backup of the key service."
+      - id: d
+        text: "Replace the Transit token."
+        explanation: "Not correct. The token is a separate credential."
+    correct_option: a
+    explanation: "Correct. The key service does the unsealing."
+
+  - id: ats117-020-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the built-in seals"
+    source_readings:
+      - sections/section-020/module-01/course-01-seals-and-recovery-keys.md
+    prompt: "Which list shows the seals built into the OpenBao 2.7 binary?"
+    options:
+      - id: a
+        text: "shamir, awskms, gcpckms and azurekeyvault."
+        explanation: "Not correct. The cloud seals are plugins since v2.7.0."
+      - id: b
+        text: "transit, static, awskms and pkcs11."
+        explanation: "Not correct. awskms and pkcs11 are plugins."
+      - id: c
+        text: "shamir, kmip, ocikms and alicloudkms."
+        explanation: "Not correct. ocikms and alicloudkms are plugins."
+      - id: d
+        text: "shamir, transit, static and kmip."
+        explanation: "Correct. These four are built in."
+    correct_option: d
+    explanation: "Correct. These four are built in."
+
+  - id: ats117-020-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Configure a plugin seal"
+    source_readings:
+      - sections/section-020/module-01/course-01-seals-and-recovery-keys.md
+    prompt: "What does a seal \"awskms\" block need on OpenBao 2.7?"
+    options:
+      - id: a
+        text: "Nothing else, because awskms is built in."
+        explanation: "Not correct. It is an external plugin since v2.7.0."
+      - id: b
+        text: "A plugin \"kms\" \"awskms\" block with the plugin binary on the server."
+        explanation: "Correct. The names in the two blocks must match."
+      - id: c
+        text: "An AWS access key written in the seal block."
+        explanation: "Not correct. Credentials come from sources such as an IAM role."
+      - id: d
+        text: "A static seal block as a fallback."
+        explanation: "Not correct. No fallback block is required."
+    correct_option: b
+    explanation: "Correct. The names in the two blocks must match."
+
+  - id: ats117-020-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the Transit policy"
+    source_readings:
+      - sections/section-020/module-01/course-02-the-transit-seal.md
+    prompt: "Which capabilities does the autounseal policy give the seal token?"
+    options:
+      - id: a
+        text: "update on transit/encrypt/autounseal and transit/decrypt/autounseal only."
+        explanation: "Correct. The token cannot read other secrets or delete the key."
+      - id: b
+        text: "Full access to the transit/ mount."
+        explanation: "Not correct. The policy is limited to one key."
+      - id: c
+        text: "read and list on every path of the unsealer."
+        explanation: "Not correct. It does not allow reads of other secrets."
+      - id: d
+        text: "The root policy of the unsealer."
+        explanation: "Not correct. A root token would be a risk if the Secret leaks."
+    correct_option: a
+    explanation: "Correct. The token cannot read other secrets or delete the key."
+
+  - id: ats117-020-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Create the seal token"
+    source_readings:
+      - sections/section-020/module-01/course-02-the-transit-seal.md
+    prompt: "Which command creates a token that follows the OpenBao advice for the Transit seal?"
+    options:
+      - id: a
+        text: "bao token create -ttl=24h -explicit-max-ttl=720h -policy=autounseal"
+        explanation: "Not correct. A maximum TTL stops the renewals one day."
+      - id: b
+        text: "bao token create -policy=root"
+        explanation: "Not correct. The root policy is far too broad."
+      - id: c
+        text: "bao token create -orphan -period=24h -policy=autounseal"
+        explanation: "Correct. It is an orphan, periodic token with the limited policy."
+      - id: d
+        text: "bao token create -ttl=1h -policy=default"
+        explanation: "Not correct. The default policy cannot call encrypt or decrypt."
+    correct_option: c
+    explanation: "Correct. It is an orphan, periodic token with the limited policy."
+
+  - id: ats117-020-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pass the token through Helm"
+    source_readings:
+      - sections/section-020/module-01/course-02-the-transit-seal.md
+    prompt: "How does the Helm chart give the seal token to the pods?"
+    options:
+      - id: a
+        text: "In the token field of the seal \"transit\" block."
+        explanation: "Not correct. The block has no token, by recommendation."
+      - id: b
+        text: "With server.extraSecretEnvironmentVars, which sets BAO_TOKEN from a Kubernetes Secret."
+        explanation: "Correct. The token is not written into the configuration file."
+      - id: c
+        text: "In an annotation on the StatefulSet."
+        explanation: "Not correct. Annotations are not read by OpenBao."
+      - id: d
+        text: "As an argument of the readiness probe."
+        explanation: "Not correct. Probes do not carry tokens."
+    correct_option: b
+    explanation: "Correct. The token is not written into the configuration file."
+
+  - id: ats117-020-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Run commands in a Transit pod"
+    source_readings:
+      - sections/section-020/module-01/course-02-the-transit-seal.md
+    prompt: "You run bao status inside a Transit-sealed pod with no token and a command that needs one fails with permission denied. Why?"
+    options:
+      - id: a
+        text: "The pod is sealed."
+        explanation: "Not correct. The cluster is unsealed in this case."
+      - id: b
+        text: "The recovery keys have expired."
+        explanation: "Not correct. Recovery keys are not used for this."
+      - id: c
+        text: "The Transit key was rotated."
+        explanation: "Not correct. Rotation does not cause permission denied."
+      - id: d
+        text: "BAO_TOKEN in the pod is the seal token, so the command uses it."
+        explanation: "Correct. That is why the helper passes BAO_TOKEN explicitly."
+    correct_option: d
+    explanation: "Correct. That is why the helper passes BAO_TOKEN explicitly."
+
+  - id: ats117-020-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Order the migration steps"
+    source_readings:
+      - sections/section-020/module-01/course-03-migrating-from-shamir-to-transit.md
+    prompt: "What is the order of a seal migration on an Integrated Storage cluster?"
+    options:
+      - id: a
+        text: "Add the seal to the configuration, restart and unseal each standby with -migrate, step the leader down, restart the old leader."
+        explanation: "Correct. The migrated standby performs the migration after the step-down."
+      - id: b
+        text: "Restart all pods at once, then run unseal -migrate on the leader."
+        explanation: "Not correct. Raft needs a quorum during the migration."
+      - id: c
+        text: "Step the leader down, then add the seal to the configuration."
+        explanation: "Not correct. The configuration comes first."
+      - id: d
+        text: "Delete the Shamir key shares, then restart the leader."
+        explanation: "Not correct. The shares become the recovery keys."
+    correct_option: a
+    explanation: "Correct. The migrated standby performs the migration after the step-down."
+
+  - id: ats117-020-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the -migrate flag"
+    source_readings:
+      - sections/section-020/module-01/course-03-migrating-from-shamir-to-transit.md
+    prompt: "What happens if you unseal a restarted standby without -migrate during the migration?"
+    options:
+      - id: a
+        text: "It silently deletes the Shamir seal."
+        explanation: "Not correct. It refuses the share."
+      - id: b
+        text: "It refuses the Shamir key share because its configuration names a different seal."
+        explanation: "Correct. The flag marks the share as part of a migration."
+      - id: c
+        text: "It unseals through Transit and ignores the share."
+        explanation: "Not correct. Migration needs the flag first."
+      - id: d
+        text: "It becomes the leader at once."
+        explanation: "Not correct. Unsealing does not change leadership."
+    correct_option: b
+    explanation: "Correct. The flag marks the share as part of a migration."

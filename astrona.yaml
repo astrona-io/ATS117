@@ -126,6 +126,10 @@ modules:
             url: https://openbao.org/docs/concepts/integrated-storage/
           - name: "High availability"
             url: https://openbao.org/docs/concepts/ha/
+      - type: quiz
+        title: "Knowledge Check: High Availability With Integrated Storage"
+        path: sections/section-010/quiz.yaml
+        pass_score: 70
 
   - id: module-020
     title: "Auto-Unseal"
@@ -198,6 +202,10 @@ modules:
             url: https://openbao.org/docs/configuration/seal/transit/
           - name: "Tokens"
             url: https://openbao.org/docs/concepts/tokens/
+      - type: quiz
+        title: "Knowledge Check: Auto-Unseal"
+        path: sections/section-020/quiz.yaml
+        pass_score: 70
 
   - id: module-030
     title: "Telemetry And Monitoring"
@@ -268,6 +276,10 @@ modules:
             url: https://openbao.org/docs/internals/telemetry/metrics/core-system/
           - name: "Health endpoint"
             url: https://openbao.org/docs/api/system/health/
+      - type: quiz
+        title: "Knowledge Check: Telemetry And Monitoring"
+        path: sections/section-030/quiz.yaml
+        pass_score: 70
 
   - id: module-040
     title: "Snapshots, Backup And Upgrades"
@@ -337,3 +349,11 @@ modules:
             url: https://openbao.org/docs/platform/k8s/helm/
           - name: "operator step-down"
             url: https://openbao.org/docs/commands/operator/step-down/
+      - type: quiz
+        title: "Knowledge Check: Snapshots, Backup And Upgrades"
+        path: sections/section-040/quiz.yaml
+        pass_score: 70
+      - type: quiz
+        title: "Final Domain Quiz"
+        path: sections/final-domain-quiz.yaml
+        pass_score: 70

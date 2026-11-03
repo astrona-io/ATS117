@@ -1,0 +1,245 @@
+# Knowledge check for section 010. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats117-010
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-010
+  title: "High Availability With Integrated Storage"
+placement:
+  position: after
+  reading: sections/section-010/capstone/labs/lab-01/question.md
+questions:
+  - id: ats117-010-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain the roles of leader and followers"
+    source_readings:
+      - sections/section-010/module-01/course-01-raft-voters-and-quorum.md
+    prompt: "Which node accepts every write in an Integrated Storage cluster?"
+    options:
+      - id: a
+        text: "Any node, because all nodes hold the same data."
+        explanation: "Not correct. Standbys forward writes to the active node."
+      - id: b
+        text: "The node with the most free disk space."
+        explanation: "Not correct. Disk space plays no part in the choice of leader."
+      - id: c
+        text: "The Raft leader, which is also the active node."
+        explanation: "Correct. The leader appends each write to its log and sends it to the followers."
+      - id: d
+        text: "The node that started first, for as long as it runs."
+        explanation: "Not correct. Leaders come from elections, not from start order."
+    correct_option: c
+    explanation: "Correct. The leader appends each write to its log and sends it to the followers."
+
+  - id: ats117-010-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Calculate quorum"
+    source_readings:
+      - sections/section-010/module-01/course-01-raft-voters-and-quorum.md
+    prompt: "A cluster has 5 voters. How many must store a write before it is committed, and how many failures does the cluster survive?"
+    options:
+      - id: a
+        text: "3 voters; 2 failures."
+        explanation: "Correct. The quorum is (5 / 2) + 1, rounded down, which is 3."
+      - id: b
+        text: "5 voters; 0 failures."
+        explanation: "Not correct. Raft needs a majority, not all voters."
+      - id: c
+        text: "2 voters; 3 failures."
+        explanation: "Not correct. Two of five is not a majority."
+      - id: d
+        text: "4 voters; 1 failure."
+        explanation: "Not correct. A majority of five is three."
+    correct_option: a
+    explanation: "Correct. The quorum is (5 / 2) + 1, rounded down, which is 3."
+
+  - id: ats117-010-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose a sound number of voters"
+    source_readings:
+      - sections/section-010/module-01/course-01-raft-voters-and-quorum.md
+    prompt: "Why do clusters use an odd number of voters?"
+    options:
+      - id: a
+        text: "Raft refuses to start with an even number of voters."
+        explanation: "Not correct. Even numbers work, they just add no tolerance."
+      - id: b
+        text: "An odd number lets two leaders work at the same time."
+        explanation: "Not correct. Raft always has one leader."
+      - id: c
+        text: "Odd numbers use less disk space on each node."
+        explanation: "Not correct. Every voter holds a full copy of the data."
+      - id: d
+        text: "Four voters survive one failure, the same as three, but every write needs one more node to agree."
+        explanation: "Correct. The extra voter adds cost and no failure tolerance."
+    correct_option: d
+    explanation: "Correct. The extra voter adds cost and no failure tolerance."
+
+  - id: ats117-010-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe a non-voter"
+    source_readings:
+      - sections/section-010/module-01/course-01-raft-voters-and-quorum.md
+    prompt: "What can a non-voter do?"
+    options:
+      - id: a
+        text: "It votes in elections but never stores data."
+        explanation: "Not correct. A non-voter stores data and does not vote."
+      - id: b
+        text: "It receives the data but does not vote and cannot become leader."
+        explanation: "Correct. New nodes start as non-voters until they are healthy."
+      - id: c
+        text: "It accepts writes when the leader is slow."
+        explanation: "Not correct. Only the leader accepts writes."
+      - id: d
+        text: "It counts toward the quorum but cannot read data."
+        explanation: "Not correct. Non-voters do not count toward the quorum."
+    correct_option: b
+    explanation: "Correct. New nodes start as non-voters until they are healthy."
+
+  - id: ats117-010-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain how a node finds the cluster"
+    source_readings:
+      - sections/section-010/module-01/course-02-joining-nodes-and-autopilot.md
+    prompt: "What does a retry_join block in the storage \"raft\" stanza do?"
+    options:
+      - id: a
+        text: "It gives a node with no Raft data an address where it may find an active node and join."
+        explanation: "Correct. The node tries each leader_api_addr in turn and keeps retrying."
+      - id: b
+        text: "It lists the nodes that may vote in an election."
+        explanation: "Not correct. Voting rights come from the Raft configuration and autopilot."
+      - id: c
+        text: "It copies the data folder from the leader to disk once a day."
+        explanation: "Not correct. retry_join does not make backups."
+      - id: d
+        text: "It restarts the pod when the leader is lost."
+        explanation: "Not correct. Restarting pods is the job of Kubernetes."
+    correct_option: a
+    explanation: "Correct. The node tries each leader_api_addr in turn and keeps retrying."
+
+  - id: ats117-010-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why a Shamir-sealed node waits"
+    source_readings:
+      - sections/section-010/module-01/course-02-joining-nodes-and-autopilot.md
+    prompt: "A new pod with the Shamir seal runs retry_join but never appears in list-peers. What is missing?"
+    options:
+      - id: a
+        text: "The pod needs a second retry_join block that points to itself."
+        explanation: "Not correct. The addresses are the same in every pod."
+      - id: b
+        text: "The leader must be stepped down first."
+        explanation: "Not correct. Joining does not need a step-down."
+      - id: c
+        text: "The pod must be unsealed, because it needs the cluster keys to answer the leader's encrypted challenge."
+        explanation: "Correct. Until it is unsealed it cannot prove it belongs."
+      - id: d
+        text: "Autopilot must be turned off."
+        explanation: "Not correct. Autopilot promotes the node after it joins."
+    correct_option: c
+    explanation: "Correct. Until it is unsealed it cannot prove it belongs."
+
+  - id: ats117-010-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe autopilot defaults"
+    source_readings:
+      - sections/section-010/module-01/course-02-joining-nodes-and-autopilot.md
+    prompt: "What is the default value of cleanup_dead_servers, and what follows from it?"
+    options:
+      - id: a
+        text: "True; dead nodes are removed after one minute."
+        explanation: "Not correct. Cleanup is off by default."
+      - id: b
+        text: "False; a node that is gone for good stays in the Raft configuration as a voter and still counts toward the quorum."
+        explanation: "Correct. The cluster tolerates one fewer failure than expected."
+      - id: c
+        text: "False; dead nodes are removed by the Kubernetes StatefulSet controller."
+        explanation: "Not correct. Kubernetes does not edit the Raft configuration."
+      - id: d
+        text: "True; dead nodes are removed only after 24 hours."
+        explanation: "Not correct. 24 hours is the default threshold, and cleanup is still off."
+    correct_option: b
+    explanation: "Correct. The cluster tolerates one fewer failure than expected."
+
+  - id: ats117-010-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Configure autopilot cleanup safely"
+    source_readings:
+      - sections/section-010/module-01/course-02-joining-nodes-and-autopilot.md
+    prompt: "Why does OpenBao require -min-quorum when cleanup of dead servers is turned on?"
+    options:
+      - id: a
+        text: "It sets the number of seconds a node waits before it joins."
+        explanation: "Not correct. That is the stabilization time."
+      - id: b
+        text: "It sets how many snapshots autopilot keeps."
+        explanation: "Not correct. Autopilot does not manage snapshots."
+      - id: c
+        text: "It chooses which node becomes the next leader."
+        explanation: "Not correct. Leaders come from elections."
+      - id: d
+        text: "Autopilot never removes servers below that number, so a short outage cannot shrink the cluster."
+        explanation: "Correct. It is a floor for the number of voters."
+    correct_option: d
+    explanation: "Correct. It is a floor for the number of voters."
+
+  - id: ats117-010-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Handle a planned leader change"
+    source_readings:
+      - sections/section-010/module-01/course-03-failover-standbys-and-lost-quorum.md
+    prompt: "You must restart the active node for a configuration change. What should you do first?"
+    options:
+      - id: a
+        text: "Run bao operator step-down so the others elect a new leader before the restart."
+        explanation: "Correct. Clients then see no errors during the restart."
+      - id: b
+        text: "Delete the standby pods so they do not vote."
+        explanation: "Not correct. That removes voters and risks the quorum."
+      - id: c
+        text: "Run peers.json recovery on the leader."
+        explanation: "Not correct. That is a disaster procedure."
+      - id: d
+        text: "Scale the StatefulSet to one replica."
+        explanation: "Not correct. That leaves dead voters in the configuration."
+    correct_option: a
+    explanation: "Correct. Clients then see no errors during the restart."
+
+  - id: ats117-010-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Recover from lost quorum"
+    source_readings:
+      - sections/section-010/module-01/course-03-failover-standbys-and-lost-quorum.md
+    prompt: "Two of three pods are lost and the cluster has no leader. The pods can be started again. What is the first choice?"
+    options:
+      - id: a
+        text: "Write a peers.json file into the surviving node at once."
+        explanation: "Not correct. peers.json is for nodes that are gone for good."
+      - id: b
+        text: "Start the pods and unseal them, so enough voters return to elect a leader with no data lost."
+        explanation: "Correct. This is the first choice whenever the nodes can come back."
+      - id: c
+        text: "Run bao operator raft remove-peer on both lost nodes."
+        explanation: "Not correct. That throws away nodes that could return."
+      - id: d
+        text: "Enable disable_standby_reads on the survivor."
+        explanation: "Not correct. That setting does not restore a quorum."
+    correct_option: b
+    explanation: "Correct. This is the first choice whenever the nodes can come back."

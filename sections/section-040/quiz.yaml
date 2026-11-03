@@ -1,0 +1,245 @@
+# Knowledge check for section 040. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats117-040
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-040
+  title: "Snapshots, Backup And Upgrades"
+placement:
+  position: after
+  reading: sections/section-040/capstone/labs/lab-01/question.md
+questions:
+  - id: ats117-040-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe a Raft snapshot"
+    source_readings:
+      - sections/section-040/module-01/course-01-raft-snapshots.md
+    prompt: "What does a Raft snapshot contain?"
+    options:
+      - id: a
+        text: "Only the KV secrets of the default mount."
+        explanation: "Not correct. It covers all stored data."
+      - id: b
+        text: "Only the OpenBao configuration file."
+        explanation: "Not correct. The server configuration is not in storage."
+      - id: c
+        text: "A point-in-time copy of all data in Integrated Storage, such as secrets, policies, auth methods, tokens and leases."
+        explanation: "Correct. The leader writes it."
+      - id: d
+        text: "The unseal keys of the cluster."
+        explanation: "Not correct. The keys are never in the snapshot."
+    correct_option: c
+    explanation: "Correct. The leader writes it."
+
+  - id: ats117-040-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Take a snapshot"
+    source_readings:
+      - sections/section-040/module-01/course-01-raft-snapshots.md
+    prompt: "Where do you run bao operator raft snapshot save?"
+    options:
+      - id: a
+        text: "Against the leader, with a token that may use sys/storage/raft/snapshot."
+        explanation: "Correct. The same data is available as a GET request on that path."
+      - id: b
+        text: "On a sealed standby, to avoid load on the leader."
+        explanation: "Not correct. A sealed node answers almost nothing."
+      - id: c
+        text: "On the unsealer server only."
+        explanation: "Not correct. The unsealer holds a different cluster."
+      - id: d
+        text: "With no token, because snapshots are public."
+        explanation: "Not correct. A token with permission is required."
+    correct_option: a
+    explanation: "Correct. The same data is available as a GET request on that path."
+
+  - id: ats117-040-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Store a backup"
+    source_readings:
+      - sections/section-040/module-01/course-01-raft-snapshots.md
+    prompt: "You saved a snapshot to /tmp/backup.snap inside the leader pod. What is the problem?"
+    options:
+      - id: a
+        text: "/tmp is shared with other pods, so others can read it."
+        explanation: "Not correct. The problem is that the file is lost with the pod."
+      - id: b
+        text: "Snapshots must be saved on a standby."
+        explanation: "Not correct. The leader saves snapshots."
+      - id: c
+        text: "Snapshot files cannot be copied with kubectl."
+        explanation: "Not correct. They can be copied."
+      - id: d
+        text: "The file disappears with the pod; copy it to storage outside the cluster."
+        explanation: "Correct. A file in a pod is not a backup."
+    correct_option: d
+    explanation: "Correct. A file in a pod is not a backup."
+
+  - id: ats117-040-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pair snapshots with keys"
+    source_readings:
+      - sections/section-040/module-01/course-01-raft-snapshots.md
+    prompt: "What do you need besides the snapshot to use it for a cluster with a Transit seal?"
+    options:
+      - id: a
+        text: "The Raft node IDs of the old pods."
+        explanation: "Not correct. Node IDs do not decrypt data."
+      - id: b
+        text: "The same Transit key in the same key service."
+        explanation: "Correct. The snapshot stays encrypted with the cluster's keyring."
+      - id: c
+        text: "The Kubernetes namespace name."
+        explanation: "Not correct. It does not matter for decryption."
+      - id: d
+        text: "Nothing, because the snapshot is plain text."
+        explanation: "Not correct. It is encrypted."
+    correct_option: b
+    explanation: "Correct. The snapshot stays encrypted with the cluster's keyring."
+
+  - id: ats117-040-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict restore results"
+    source_readings:
+      - sections/section-040/module-01/course-02-restoring-a-snapshot.md
+    prompt: "A secret is written after a snapshot, and a different secret is deleted. You restore the snapshot. What is the result?"
+    options:
+      - id: a
+        text: "The deleted secret is back and the newer secret is gone."
+        explanation: "Correct. The restore rolls back everything written since the snapshot."
+      - id: b
+        text: "Both secrets exist."
+        explanation: "Not correct. The newer secret is rolled back."
+      - id: c
+        text: "Neither secret exists."
+        explanation: "Not correct. The deleted one is in the snapshot."
+      - id: d
+        text: "Only the newer secret exists."
+        explanation: "Not correct. The data returns to the time of the snapshot."
+    correct_option: a
+    explanation: "Correct. The restore rolls back everything written since the snapshot."
+
+  - id: ats117-040-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Keep later changes"
+    source_readings:
+      - sections/section-040/module-01/course-02-restoring-a-snapshot.md
+    prompt: "How do you keep a legitimate change made after the snapshot?"
+    options:
+      - id: a
+        text: "Restore with -force."
+        explanation: "Not correct. -force skips the key check and keeps nothing."
+      - id: b
+        text: "Restore on a standby."
+        explanation: "Not correct. Run the restore on the active node."
+      - id: c
+        text: "Read it before the restore and write it again afterwards."
+        explanation: "Correct. The restore deletes it, so reading must come first."
+      - id: d
+        text: "Restore twice in a row."
+        explanation: "Not correct. The second restore also rolls it back."
+    correct_option: c
+    explanation: "Correct. The restore deletes it, so reading must come first."
+
+  - id: ats117-040-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use -force correctly"
+    source_readings:
+      - sections/section-040/module-01/course-02-restoring-a-snapshot.md
+    prompt: "When does bao operator raft snapshot restore -force apply?"
+    options:
+      - id: a
+        text: "Whenever a restore refuses to run."
+        explanation: "Not correct. A refusal means the keys do not match."
+      - id: b
+        text: "In disaster recovery into a different cluster, when you hold the original keys."
+        explanation: "Correct. It skips the check that the keys match."
+      - id: c
+        text: "To restore a single secret."
+        explanation: "Not correct. A restore always replaces all data."
+      - id: d
+        text: "To make a restore run faster."
+        explanation: "Not correct. It does not change speed."
+    correct_option: b
+    explanation: "Correct. It skips the check that the keys match."
+
+  - id: ats117-040-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain OnDelete"
+    source_readings:
+      - sections/section-040/module-01/course-03-rolling-upgrades.md
+    prompt: "What does the OnDelete update strategy of the Helm chart mean for helm upgrade?"
+    options:
+      - id: a
+        text: "All pods restart at once."
+        explanation: "Not correct. Nothing restarts automatically."
+      - id: b
+        text: "Pods restart one by one, waiting for Ready."
+        explanation: "Not correct. That is RollingUpdate."
+      - id: c
+        text: "Only the leader restarts."
+        explanation: "Not correct. No pod restarts by itself."
+      - id: d
+        text: "A changed template reaches a pod only when you delete that pod."
+        explanation: "Correct. You choose when each pod restarts."
+    correct_option: d
+    explanation: "Correct. You choose when each pod restarts."
+
+  - id: ats117-040-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Order an upgrade"
+    source_readings:
+      - sections/section-040/module-01/course-03-rolling-upgrades.md
+    prompt: "What is the order of a rolling upgrade?"
+    options:
+      - id: a
+        text: "Snapshot first, standbys one at a time, step the leader down, upgrade the old leader last."
+        explanation: "Correct. The cluster elects a new leader only once."
+      - id: b
+        text: "Upgrade the leader first, then the standbys."
+        explanation: "Not correct. The leader goes last."
+      - id: c
+        text: "Delete all pods, then unseal them together."
+        explanation: "Not correct. That loses the quorum."
+      - id: d
+        text: "Upgrade standbys, then take a snapshot."
+        explanation: "Not correct. The snapshot comes first."
+    correct_option: a
+    explanation: "Correct. The cluster elects a new leader only once."
+
+  - id: ats117-040-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Check progress between pods"
+    source_readings:
+      - sections/section-040/module-01/course-03-rolling-upgrades.md
+    prompt: "What must you check before you restart the next pod during an upgrade?"
+    options:
+      - id: a
+        text: "That the Helm chart version has changed."
+        explanation: "Not correct. That does not show cluster health."
+      - id: b
+        text: "That the upgraded pod is unsealed and the cluster has three voters again."
+        explanation: "Correct. Two voters must stay up at all times."
+      - id: c
+        text: "That the snapshot file is deleted."
+        explanation: "Not correct. Keep the snapshot."
+      - id: d
+        text: "That the unsealer pod is restarted."
+        explanation: "Not correct. It is not part of this check."
+    correct_option: b
+    explanation: "Correct. Two voters must stay up at all times."

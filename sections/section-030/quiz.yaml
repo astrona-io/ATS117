@@ -1,0 +1,245 @@
+# Knowledge check for section 030. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats117-030
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-030
+  title: "Telemetry And Monitoring"
+placement:
+  position: after
+  reading: sections/section-030/capstone/labs/lab-01/question.md
+questions:
+  - id: ats117-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Configure the telemetry stanza"
+    source_readings:
+      - sections/section-030/module-01/course-01-telemetry-and-the-metrics-endpoint.md
+    prompt: "What does prometheus_retention_time do?"
+    options:
+      - id: a
+        text: "It sets how often Prometheus scrapes the node."
+        explanation: "Not correct. The scrape interval is set in Prometheus."
+      - id: b
+        text: "It deletes metrics older than the value from Prometheus."
+        explanation: "Not correct. It controls OpenBao's own memory."
+      - id: c
+        text: "It turns on the Prometheus format and sets how long OpenBao keeps a value that has not been updated."
+        explanation: "Correct. The default is 24h."
+      - id: d
+        text: "It removes the host name from the metric names."
+        explanation: "Not correct. disable_hostname does that."
+    correct_option: c
+    explanation: "Correct. The default is 24h."
+
+  - id: ats117-030-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read the metrics endpoint"
+    source_readings:
+      - sections/section-030/module-01/course-01-telemetry-and-the-metrics-endpoint.md
+    prompt: "Why does a scrape of /v1/sys/metrics need format=prometheus?"
+    options:
+      - id: a
+        text: "Without it the endpoint answers with JSON, which Prometheus cannot read."
+        explanation: "Correct. The parameter selects the exposition format."
+      - id: b
+        text: "It selects which node answers the request."
+        explanation: "Not correct. The target address selects the node."
+      - id: c
+        text: "It turns off the token check."
+        explanation: "Not correct. That is unauthenticated_metrics_access."
+      - id: d
+        text: "It adds the vault_ prefix to the names."
+        explanation: "Not correct. The prefix is always there."
+    correct_option: a
+    explanation: "Correct. The parameter selects the exposition format."
+
+  - id: ats117-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Allow anonymous metrics access"
+    source_readings:
+      - sections/section-030/module-01/course-01-telemetry-and-the-metrics-endpoint.md
+    prompt: "Where is unauthenticated_metrics_access set, and what does it cover?"
+    options:
+      - id: a
+        text: "In the top-level telemetry stanza; it covers all sys endpoints."
+        explanation: "Not correct. The setting belongs to the listener and covers only metrics."
+      - id: b
+        text: "In the storage block; it covers Raft snapshots."
+        explanation: "Not correct. Storage has no such setting."
+      - id: c
+        text: "In a Kubernetes Service; it covers every port."
+        explanation: "Not correct. It is an OpenBao listener option."
+      - id: d
+        text: "In the telemetry block of the listener; it covers the metrics endpoint only."
+        explanation: "Correct. It is not a general anonymous mode."
+    correct_option: d
+    explanation: "Correct. It is not a general anonymous mode."
+
+  - id: ats117-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain per-node reporting"
+    source_readings:
+      - sections/section-030/module-01/course-01-telemetry-and-the-metrics-endpoint.md
+    prompt: "The active node reports vault_core_unsealed 1. What does that tell you about the standbys?"
+    options:
+      - id: a
+        text: "That both standbys are unsealed."
+        explanation: "Not correct. The active node does not report on others."
+      - id: b
+        text: "Nothing; each node reports only its own state."
+        explanation: "Correct. That is why every pod needs its own scrape target."
+      - id: c
+        text: "That both standbys are sealed."
+        explanation: "Not correct. It cannot know."
+      - id: d
+        text: "That the cluster has three voters."
+        explanation: "Not correct. Use the Raft and autopilot metrics for that."
+    correct_option: b
+    explanation: "Correct. That is why every pod needs its own scrape target."
+
+  - id: ats117-030-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Write a scrape job"
+    source_readings:
+      - sections/section-030/module-01/course-02-scraping-every-node-with-prometheus.md
+    prompt: "How do you add format=prometheus to a Prometheus scrape job for OpenBao?"
+    options:
+      - id: a
+        text: "Put it in the params block of the job."
+        explanation: "Correct. The params block adds the query string to each request."
+      - id: b
+        text: "Append ?format=prometheus to metrics_path."
+        explanation: "Not correct. Prometheus escapes the question mark."
+      - id: c
+        text: "Add it to the global section."
+        explanation: "Not correct. Global settings do not set per-job parameters."
+      - id: d
+        text: "Write it into the OpenBao listener."
+        explanation: "Not correct. The client chooses the format."
+    correct_option: a
+    explanation: "Correct. The params block adds the query string to each request."
+
+  - id: ats117-030-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose scrape targets"
+    source_readings:
+      - sections/section-030/module-01/course-02-scraping-every-node-with-prometheus.md
+    prompt: "Why does the scrape job list each pod through the headless Service openbao-internal?"
+    options:
+      - id: a
+        text: "A headless Service encrypts the metrics in transit."
+        explanation: "Not correct. It only provides DNS names."
+      - id: b
+        text: "It makes Prometheus skip sealed pods."
+        explanation: "Not correct. A sealed pod should still be a target."
+      - id: c
+        text: "Each pod has its own stable DNS name, so every node becomes its own target."
+        explanation: "Correct. A normal Service picks one pod per request."
+      - id: d
+        text: "It gives all pods the same IP address."
+        explanation: "Not correct. Each pod keeps its own address."
+    correct_option: c
+    explanation: "Correct. A normal Service picks one pod per request."
+
+  - id: ats117-030-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Roll out a config change safely"
+    source_readings:
+      - sections/section-030/module-01/course-02-scraping-every-node-with-prometheus.md
+    prompt: "A Shamir cluster with the OnDelete strategy needs telemetry added. Which order is correct?"
+    options:
+      - id: a
+        text: "Delete all three pods at once."
+        explanation: "Not correct. That loses the quorum."
+      - id: b
+        text: "Standbys one at a time with unseal, then step the leader down and restart it last."
+        explanation: "Correct. Two voters always stay up."
+      - id: c
+        text: "Restart the leader first, then the standbys together."
+        explanation: "Not correct. Restart the leader last."
+      - id: d
+        text: "Run helm upgrade only; the pods restart themselves."
+        explanation: "Not correct. OnDelete waits for you to delete each pod."
+    correct_option: b
+    explanation: "Correct. Two voters always stay up."
+
+  - id: ats117-030-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pick the key metrics"
+    source_readings:
+      - sections/section-030/module-01/course-03-key-metrics-and-the-health-endpoint.md
+    prompt: "Which metric shows how many voters can fail before quorum is lost?"
+    options:
+      - id: a
+        text: "vault_core_active"
+        explanation: "Not correct. It shows which node is the active node."
+      - id: b
+        text: "vault_expire_num_leases"
+        explanation: "Not correct. It counts leases."
+      - id: c
+        text: "vault_core_unsealed"
+        explanation: "Not correct. It shows whether one node is sealed."
+      - id: d
+        text: "vault_autopilot_failure_tolerance"
+        explanation: "Correct. Three healthy voters give a value of 1."
+    correct_option: d
+    explanation: "Correct. Three healthy voters give a value of 1."
+
+  - id: ats117-030-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Alert on a sealed node"
+    source_readings:
+      - sections/section-030/module-01/course-03-key-metrics-and-the-health-endpoint.md
+    prompt: "Why does the OpenBaoNodeSealed rule use vault_core_unsealed == 0 or up{job=\"openbao\"} == 0?"
+    options:
+      - id: a
+        text: "A sealed node may report 0 or may stop answering, so the rule covers both cases."
+        explanation: "Correct. If the metric disappears, only up shows the problem."
+      - id: b
+        text: "up == 0 is needed because gauges cannot be compared with 0."
+        explanation: "Not correct. Gauges can be compared."
+      - id: c
+        text: "The second part makes the alert fire on the leader only."
+        explanation: "Not correct. Both parts apply to every instance."
+      - id: d
+        text: "The rule needs two conditions to be valid YAML."
+        explanation: "Not correct. One condition would be valid."
+    correct_option: a
+    explanation: "Correct. If the metric disappears, only up shows the problem."
+
+  - id: ats117-030-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read health endpoint codes"
+    source_readings:
+      - sections/section-030/module-01/course-03-key-metrics-and-the-health-endpoint.md
+    prompt: "A load balancer calls /v1/sys/health on a healthy standby. Which code does it get by default?"
+    options:
+      - id: a
+        text: "200"
+        explanation: "Not correct. 200 means initialized, unsealed and active."
+      - id: b
+        text: "429"
+        explanation: "Correct. 429 means unsealed and standby. standbyok=true makes it 200."
+      - id: c
+        text: "503"
+        explanation: "Not correct. 503 means sealed."
+      - id: d
+        text: "501"
+        explanation: "Not correct. 501 means not initialized."
+    correct_option: b
+    explanation: "Correct. 429 means unsealed and standby. standbyok=true makes it 200."
