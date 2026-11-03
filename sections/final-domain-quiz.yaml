@@ -1,4 +1,4 @@
-# Final domain knowledge check across all four sections.
+# Final domain knowledge check across all four sections and both modules of each.
 schema_version: 1
 kind: question_bank
 id: ats117-final
@@ -286,3 +286,187 @@ questions:
         explanation: "Not correct. The snapshot comes first."
     correct_option: c
     explanation: "Correct. The cluster elects a new leader only once."
+
+  - id: ats117-final-q13
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know why even voter counts add no tolerance"
+    source_readings:
+      - sections/section-010/module-02/course-02-adding-a-node.md
+    prompt: "How many failures does a cluster of four voters survive?"
+    options:
+      - id: a
+        text: "Two."
+        explanation: "Not correct. The majority of four is three."
+      - id: b
+        text: "One."
+        explanation: "Correct. The quorum of four is three, the same tolerance as three voters."
+      - id: c
+        text: "Three."
+        explanation: "Not correct. Three failures leave one voter."
+      - id: d
+        text: "None."
+        explanation: "Not correct. One failure leaves a majority."
+    correct_option: b
+    explanation: "Correct. The quorum of four is three, the same tolerance as three voters."
+
+  - id: ats117-final-q14
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Retire a node in the right order"
+    source_readings:
+      - sections/section-010/module-02/course-03-removing-and-replacing-nodes.md
+    prompt: "Which step comes first when retiring a Raft node?"
+    options:
+      - id: a
+        text: "Scale down the StatefulSet."
+        explanation: "Not correct. The peer would stay in the quorum calculation."
+      - id: b
+        text: "Delete its volume claim."
+        explanation: "Not correct. That comes last."
+      - id: c
+        text: "bao operator raft remove-peer."
+        explanation: "Correct. Raft must forget the node before the pod and volume go."
+      - id: d
+        text: "Seal the leader."
+        explanation: "Not correct. That is not part of the order."
+    correct_option: c
+    explanation: "Correct. Raft must forget the node before the pod and volume go."
+
+  - id: ats117-final-q15
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Rotate the Transit key safely"
+    source_readings:
+      - sections/section-020/module-02/course-01-rotating-the-transit-key.md
+    prompt: "Which setting can lock the cluster out after a rotation?"
+    options:
+      - id: a
+        text: "latest_version raised to 2."
+        explanation: "Not correct. That is what a rotation does."
+      - id: b
+        text: "The key name."
+        explanation: "Not correct. It is not changed by a rotation."
+      - id: c
+        text: "The seal type."
+        explanation: "Not correct. It is not changed by a rotation."
+      - id: d
+        text: "min_decryption_version raised too early."
+        explanation: "Correct. The stored root key may need the old version."
+    correct_option: d
+    explanation: "Correct. The stored root key may need the old version."
+
+  - id: ats117-final-q16
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know the seal token properties"
+    source_readings:
+      - sections/section-020/module-02/course-02-the-seal-token-lifecycle.md
+    prompt: "Which token fits the seal?"
+    options:
+      - id: a
+        text: "An orphan, periodic token with the autounseal policy only."
+        explanation: "Correct. It survives its creator and can do nothing else."
+      - id: b
+        text: "The root token."
+        explanation: "Not correct. It makes the Secret the key to the unsealer."
+      - id: c
+        text: "A child token with a TTL."
+        explanation: "Not correct. It ends with its parent or its TTL."
+      - id: d
+        text: "A token with the default policy."
+        explanation: "Not correct. It cannot call the Transit paths."
+    correct_option: a
+    explanation: "Correct. It survives its creator and can do nothing else."
+
+  - id: ats117-final-q17
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Enable an audit device"
+    source_readings:
+      - sections/section-030/module-02/course-02-audit-devices.md
+    prompt: "What happens if all audit devices fail?"
+    options:
+      - id: a
+        text: "Requests continue unlogged."
+        explanation: "Not correct. The server protects the audit trail."
+      - id: b
+        text: "The server refuses requests."
+        explanation: "Correct. Enable at least two devices."
+      - id: c
+        text: "The cluster seals itself."
+        explanation: "Not correct. It stays unsealed."
+      - id: d
+        text: "A standby takes over."
+        explanation: "Not correct. A standby faces the same problem."
+    correct_option: b
+    explanation: "Correct. Enable at least two devices."
+
+  - id: ats117-final-q18
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Alert on a missing node"
+    source_readings:
+      - sections/section-030/module-02/course-05-alert-rules.md
+    prompt: "Which rule covers a node that is down?"
+    options:
+      - id: a
+        text: "vault_core_unsealed == 0"
+        explanation: "Not correct. A down node sends no metric at all."
+      - id: b
+        text: "sum(vault_core_active) < 1"
+        explanation: "Not correct. It returns nothing without data."
+      - id: c
+        text: "up{job=\"openbao\"} == 0"
+        explanation: "Correct. Only up shows a missing target."
+      - id: d
+        text: "vault_expire_num_leases > 0"
+        explanation: "Not correct. Unrelated to node health."
+    correct_option: c
+    explanation: "Correct. Only up shows a missing target."
+
+  - id: ats117-final-q19
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Limit the backup token"
+    source_readings:
+      - sections/section-040/module-02/course-01-a-least-privilege-backup-token.md
+    prompt: "Which policy fits a backup job?"
+    options:
+      - id: a
+        text: "read and update on that path."
+        explanation: "Not correct. Update allows a restore."
+      - id: b
+        text: "sudo on sys/*."
+        explanation: "Not correct. Far more than needed."
+      - id: c
+        text: "read on secret/*."
+        explanation: "Not correct. A snapshot does not need secret reads."
+      - id: d
+        text: "read on sys/storage/raft/snapshot only."
+        explanation: "Correct. A stolen backup token must not be able to restore."
+    correct_option: d
+    explanation: "Correct. A stolen backup token must not be able to restore."
+
+  - id: ats117-final-q20
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Plan a rollback"
+    source_readings:
+      - sections/section-040/module-02/course-04-planning-an-upgrade.md
+    prompt: "What is the safe rollback of a failed upgrade?"
+    options:
+      - id: a
+        text: "Restore the snapshot taken before it into a cluster of the old version."
+        explanation: "Correct. The snapshot is the way back."
+      - id: b
+        text: "Change the image tag back."
+        explanation: "Not correct. Storage may have moved forward."
+      - id: c
+        text: "Run step-down on the leader."
+        explanation: "Not correct. It only moves leadership."
+      - id: d
+        text: "Delete the standbys."
+        explanation: "Not correct. It does not undo anything."
+    correct_option: a
+    explanation: "Correct. The snapshot is the way back."

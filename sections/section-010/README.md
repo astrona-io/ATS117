@@ -11,6 +11,8 @@ This section is about running and keeping such a cluster. Integrated Storage use
 - Reading `bao operator raft list-peers` and `bao operator raft autopilot state`.
 - Configuring autopilot to remove dead servers while keeping a minimum quorum.
 - What happens when the leader fails, how standbys forward writes and answer reads, and what to do when quorum is lost.
+- Reading the autopilot state and the Raft settings that change failover speed.
+- Growing, shrinking and maintaining a cluster: addresses, adding and removing nodes, storage settings and disk care.
 
 ## The learning path
 
@@ -21,7 +23,16 @@ The module starts at its landing page, which also launches the playground: a thr
 1. Raft, Voters And Quorum
 2. Joining Nodes And Autopilot, followed by the lab **Join The Third Node And Configure Autopilot**
 3. Failover, Standbys And Lost Quorum
-4. Summary
+4. Autopilot State And Raft Tuning
+5. Summary
+
+### 2. Grow, Shrink And Maintain A Raft Cluster
+
+1. Addresses And Request Forwarding
+2. Adding A Node
+3. Removing And Replacing Nodes, followed by the lab **Retire A Node And Keep Quorum Safe**
+4. Storage Settings And Disk Care
+5. Summary
 
 ## Section capstone: Restore Quorum And Remove A Dead Peer
 

@@ -20,10 +20,10 @@ part it tests) and a capstone.
 
 | Section | Title | Modules | Labs | Topic |
 | --- | --- | --- | --- | --- |
-| [010](sections/section-010) | High Availability With Integrated Storage | 1 | 1 + capstone | Raft, quorum, autopilot |
-| [020](sections/section-020) | Auto-Unseal | 1 | 1 + capstone | Transit, static seal, KMS plugins, seal migration |
-| [030](sections/section-030) | Telemetry And Monitoring | 1 | 1 + capstone | Metrics, Prometheus, health endpoint |
-| [040](sections/section-040) | Snapshots, Backup And Upgrades | 1 | 1 + capstone | Raft snapshots, restore, rolling upgrades |
+| [010](sections/section-010) | High Availability With Integrated Storage | 2 | 2 + capstone | Raft, quorum, autopilot, growing and shrinking |
+| [020](sections/section-020) | Auto-Unseal | 2 | 2 + capstone | Transit, static seal, KMS plugins, seal migration and operation |
+| [030](sections/section-030) | Telemetry And Monitoring | 2 | 2 + capstone | Metrics, Prometheus, health endpoint, logs, audit, alerts |
+| [040](sections/section-040) | Snapshots, Backup And Upgrades | 2 | 2 + capstone | Raft snapshots, restore, rolling upgrades, backup automation |
 
 The order follows the life of a production cluster: first make it highly
 available, then take people out of the unseal step, then watch it, and last
@@ -33,10 +33,14 @@ protect its data and keep it current.
 
 | Module | Reader | Parts | Labs |
 | --- | --- | --- | --- |
-| 010-01 | [Run OpenBao As A Raft Cluster](sections/section-010/module-01/course.md) | 3 | [lab-01](sections/section-010/module-01/labs/lab-01) |
-| 020-01 | [Unseal OpenBao Automatically](sections/section-020/module-01/course.md) | 3 | [lab-01](sections/section-020/module-01/labs/lab-01) |
-| 030-01 | [Monitor An OpenBao Cluster](sections/section-030/module-01/course.md) | 3 | [lab-01](sections/section-030/module-01/labs/lab-01) |
-| 040-01 | [Back Up, Restore And Upgrade OpenBao](sections/section-040/module-01/course.md) | 3 | [lab-01](sections/section-040/module-01/labs/lab-01) |
+| 010-01 | [Run OpenBao As A Raft Cluster](sections/section-010/module-01/course.md) | 4 | [lab-01](sections/section-010/module-01/labs/lab-01) |
+| 010-02 | [Grow, Shrink And Maintain A Raft Cluster](sections/section-010/module-02/course.md) | 4 | [lab-01](sections/section-010/module-02/labs/lab-01) |
+| 020-01 | [Unseal OpenBao Automatically](sections/section-020/module-01/course.md) | 4 | [lab-01](sections/section-020/module-01/labs/lab-01) |
+| 020-02 | [Operate The Seal](sections/section-020/module-02/course.md) | 6 | [lab-01](sections/section-020/module-02/labs/lab-01) |
+| 030-01 | [Monitor An OpenBao Cluster](sections/section-030/module-01/course.md) | 4 | [lab-01](sections/section-030/module-01/labs/lab-01) |
+| 030-02 | [Logs, Audit And Alerts](sections/section-030/module-02/course.md) | 5 | [lab-01](sections/section-030/module-02/labs/lab-01) |
+| 040-01 | [Back Up, Restore And Upgrade OpenBao](sections/section-040/module-01/course.md) | 4 | [lab-01](sections/section-040/module-01/labs/lab-01) |
+| 040-02 | [Automate Backups And Plan Upgrades](sections/section-040/module-02/course.md) | 5 | [lab-01](sections/section-040/module-02/labs/lab-01) |
 
 ## Capstones
 

@@ -4,7 +4,7 @@ Three OpenBao pods run in your playground, and all three hold the same data. You
 
 Integrated Storage is OpenBao's built-in storage backend. Every node keeps a full copy of the data, and the nodes agree on each change with the Raft consensus protocol. Keep one sentence in mind: **a write is committed only when a majority of the voters has stored it.** That majority is called the quorum, and almost every operational task in this module protects it.
 
-The module has three parts. **Raft, Voters And Quorum** looks at the running cluster and explains leaders, voters and how many failures three nodes survive. **Joining Nodes And Autopilot** shows how a node finds the cluster with `retry_join`, why a sealed node does not join, and how autopilot watches node health; a graded lab follows it. **Failover, Standbys And Lost Quorum** deletes the leader on purpose, shows what standbys do with requests, and explains how to recover when the quorum is gone.
+The module has four parts. **Raft, Voters And Quorum** looks at the running cluster and explains leaders, voters and how many failures three nodes survive. **Joining Nodes And Autopilot** shows how a node finds the cluster with `retry_join`, why a sealed node does not join, and how autopilot watches node health; a graded lab follows it. **Failover, Standbys And Lost Quorum** deletes the leader on purpose, shows what standbys do with requests, and explains how to recover when the quorum is gone. **Autopilot State And Raft Tuning** reads the autopilot report field by field and covers the settings that decide when a server is healthy and how fast a failover happens.
 
 ## Learning objectives
 
@@ -16,6 +16,8 @@ After this module you can:
 - Explain how `retry_join` works and why a Shamir-sealed node joins only after it is unsealed.
 - Configure autopilot to clean up dead servers with a minimum quorum.
 - Describe what happens when the leader fails and how standbys handle reads and writes.
+- Read the autopilot state and name the settings that decide server health.
+- Name the Raft settings in the `storage` block that change failover speed.
 - Recover a cluster that lost quorum by bringing voters back, and remove a dead peer.
 
 ## Before you start

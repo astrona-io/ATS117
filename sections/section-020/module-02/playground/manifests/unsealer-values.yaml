@@ -1,0 +1,39 @@
+# Helm values for the unsealer: a second, single-node OpenBao v2.7.1 that
+# serves the Transit key the main cluster's seal uses. It unseals itself with
+# the static seal; the 32-byte key comes from the Secret unsealer-static-key,
+# generated when the environment starts (lab-only, never in the repository).
+fullnameOverride: unsealer
+injector:
+  enabled: false
+server:
+  image:
+    tag: "2.7.1"
+  extraSecretEnvironmentVars:
+    - envName: STATIC_UNSEAL_KEY
+      secretName: unsealer-static-key
+      secretKey: key
+  dataStorage:
+    enabled: true
+    size: 1Gi
+  standalone:
+    enabled: true
+    config: |
+      ui = false
+
+      listener "tcp" {
+        tls_disable     = 1
+        address         = "[::]:8200"
+        cluster_address = "[::]:8201"
+      }
+
+      storage "raft" {
+        path    = "/openbao/data"
+        node_id = "unsealer-0"
+      }
+
+      seal "static" {
+        current_key_id = "lab-static-1"
+        current_key    = "env://STATIC_UNSEAL_KEY"
+      }
+ui:
+  enabled: false

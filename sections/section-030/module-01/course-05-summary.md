@@ -8,6 +8,8 @@ The `telemetry` stanza makes OpenBao keep metrics. `prometheus_retention_time` t
 
 Each node reports only its own state, so Prometheus must scrape every pod. A scrape job with `metrics_path: /v1/sys/metrics` and `params: format: ["prometheus"]`, targeting each pod through the headless Service, gives one series per node with an `instance` label. A configuration change reaches a Shamir cluster with the `OnDelete` strategy only through a rolling restart: standbys one at a time with an unseal after each, then a step-down and the old leader last.
 
+The other `telemetry` settings decide how long metrics are kept and how they are named, so they affect every dashboard and alert built on them.
+
 A few metrics answer most questions: `vault_core_unsealed` and `vault_core_active` per node, autopilot's health and failure tolerance from the active node, the Raft peer count, and the number of leases. An alert on a sealed node should cover both a node that reports `0` and a node that stops answering. The health endpoint `/v1/sys/health` answers without a token with `200` for the active node, `429` for a standby, `501` when not initialized and `503` when sealed; parameters such as `standbyok` adapt it to load balancers. The key facts to remember are these:
 
 - Scrape every node; the active node does not report a sealed standby.

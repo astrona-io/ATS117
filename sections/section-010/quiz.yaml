@@ -243,3 +243,26 @@ questions:
         explanation: "Not correct. That setting does not restore a quorum."
     correct_option: b
     explanation: "Correct. This is the first choice whenever the nodes can come back."
+
+  - id: ats117-010-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the autopilot state"
+    source_readings:
+      - sections/section-010/module-01/course-04-autopilot-state-and-raft-tuning.md
+    prompt: "What does a Failure Tolerance of 0 in the autopilot state mean?"
+    options:
+      - id: a
+        text: "Nothing can fail, so the cluster is down."
+        explanation: "Not correct. The cluster still works; it has no spare voter."
+      - id: b
+        text: "No standbys exist."
+        explanation: "Not correct. Standbys are voters here; the value is about spare voters."
+      - id: c
+        text: "The leader is unhealthy."
+        explanation: "Not correct. The leader can be healthy with tolerance 0."
+      - id: d
+        text: "One more voter failure stops the cluster."
+        explanation: "Correct. Failure tolerance is the number of voters that can fail before quorum is lost."
+    correct_option: d
+    explanation: "Correct. Failure tolerance is the number of voters that can fail before quorum is lost."

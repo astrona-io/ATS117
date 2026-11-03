@@ -8,6 +8,8 @@ Every node keeps a full copy of the data in its Raft folder. The Raft consensus 
 
 A new node finds the cluster through the `retry_join` addresses in its `storage "raft"` block. It must answer an encrypted challenge to join, so a node that uses the Shamir seal joins only after it is unsealed with the cluster's key. Autopilot promotes a healthy node to voter after the stabilization time. It removes dead servers only when `cleanup_dead_servers` is on, and never below `min_quorum`.
 
+Autopilot calls a server healthy when the leader has recent contact with it, its log is close to the leader's, and it has stayed that way for the stabilization time. The thresholds are set with `set-config`. Raft settings such as `performance_multiplier` live in the `storage` block and change only when a pod restarts.
+
 When the leader fails, the remaining voters elect a new one as long as they form a quorum, and writes continue. Standbys forward writes to the active node and, since v2.5.0, answer reads from their own copy. When the quorum is lost, nothing can be written: bring the lost voters back first, remove peers that are gone for good, and keep the `peers.json` recovery for disasters. The key facts to remember are these:
 
 - Quorum is `(voters / 2) + 1` of the voters in the Raft configuration, not of the pods that run.

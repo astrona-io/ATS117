@@ -9,6 +9,7 @@ This section covers the two routine operations that protect the data over time. 
 - Saving a Raft snapshot with `bao operator raft snapshot save`, and what else you need to restore it.
 - Restoring a snapshot into a running cluster, what the restore rolls back, and when `-force` applies.
 - Upgrading with the Helm chart and the `OnDelete` strategy: snapshot first, standbys next, leader last.
+- The snapshot API, checking a snapshot file, least-privilege backup tokens, scheduled snapshots, restoring into a new cluster, upgrade planning, drills and runbooks.
 
 ## The learning path
 
@@ -19,7 +20,17 @@ The module starts at its landing page, which also launches the playground: a thr
 1. Raft Snapshots
 2. Restoring A Snapshot, followed by the lab **Restore A Deleted Secret From A Snapshot**
 3. Rolling Upgrades
-4. Summary
+4. The Snapshot API And Checking A File
+5. Summary
+
+### 2. Automate Backups And Plan Upgrades
+
+1. A Least-Privilege Backup Token, followed by the lab **Create A Backup Token**
+2. Scheduled Snapshots
+3. Restoring Into A New Cluster
+4. Planning An Upgrade
+5. Drills And Runbooks
+6. Summary
 
 ## Section capstone: Upgrade The Cluster From 2.7.0 To 2.7.1 Safely
 

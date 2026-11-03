@@ -56,7 +56,7 @@ bao_on openbao-1 status
 
 `bao status` prints the node's `Version`. Check `kubectl -n openbao get pod openbao-1 -o jsonpath='{.spec.containers[0].image}'` too: the image tag is the one from the template. Repeat for the other standby, then step the leader down with `bao operator step-down` and restart it last.
 
-OpenBao records each version a cluster has run. `bao read sys/version-history` lists them with the time each version was first seen, which is useful to prove when an upgrade happened.
+OpenBao records each version a cluster has run. `bao list sys/version-history` lists the versions the cluster has run, which is useful to prove that an upgrade happened.
 
 ## Upgrades with auto-unseal
 

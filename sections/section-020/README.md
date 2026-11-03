@@ -10,6 +10,7 @@ Auto-unseal removes that step. OpenBao asks a key service to decrypt its root ke
 - The built-in seals (Shamir, Transit, static, KMIP) and the cloud seals that are plugins since v2.7.0.
 - The Transit seal: the key, the policy and the orphan, periodic token it needs, and how the Helm chart passes the token.
 - The documented seal migration steps, with `bao operator unseal -migrate`, standbys first and the leader last.
+- Reading seal status, and operating the seal over time: rotating the Transit key, the seal token lifecycle, recovery keys, the static seal, KMS plugin seals and seal failures.
 
 ## The learning path
 
@@ -20,7 +21,18 @@ The module starts at its landing page, which also launches the playground: a thr
 1. Seals, Auto-Unseal And Recovery Keys
 2. The Transit Seal
 3. Migrating From Shamir To Transit, followed by the lab **Migrate The Cluster From Shamir To Transit Auto-Unseal**
-4. Summary
+4. Seal Status And Manual Sealing
+5. Summary
+
+### 2. Operate The Seal
+
+1. Rotating The Transit Key, followed by the lab **Rotate The Transit Key Safely**
+2. The Seal Token Lifecycle
+3. Recovery Keys In Practice
+4. The Static Seal
+5. KMS Plugin Seals
+6. Migration Paths And Seal Failures
+7. Summary
 
 ## Section capstone: Repair A Transit Seal That Stopped Working
 

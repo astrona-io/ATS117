@@ -243,3 +243,26 @@ questions:
         explanation: "Not correct. It is not part of this check."
     correct_option: b
     explanation: "Correct. Two voters must stay up at all times."
+
+  - id: ats117-040-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use the snapshot API"
+    source_readings:
+      - sections/section-040/module-01/course-04-the-snapshot-api-and-checking-a-file.md
+    prompt: "Which request takes a snapshot over HTTP?"
+    options:
+      - id: a
+        text: "POST /v1/sys/storage/raft/snapshot"
+        explanation: "Not correct. That restores a snapshot."
+      - id: b
+        text: "GET /v1/sys/snapshot"
+        explanation: "Not correct. That path does not exist."
+      - id: c
+        text: "PUT /v1/sys/storage/raft/backup"
+        explanation: "Not correct. That path does not exist."
+      - id: d
+        text: "GET /v1/sys/storage/raft/snapshot"
+        explanation: "Correct. A GET returns the snapshot, and a POST restores it."
+    correct_option: d
+    explanation: "Correct. A GET returns the snapshot, and a POST restores it."

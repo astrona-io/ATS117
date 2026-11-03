@@ -4,7 +4,7 @@ Restart one standby in your playground cluster and leave it sealed. Requests thr
 
 Metrics close that gap. OpenBao keeps counters and gauges about itself and serves them in the Prometheus format. Keep one sentence in mind: **every node reports only its own state, so every node must be scraped.** A monitor that asks only the active node never sees a sealed standby.
 
-The module has three parts. **Telemetry And The Metrics Endpoint** shows the `telemetry` stanza that is already on in the playground, reads the metrics endpoint by hand, and explains unauthenticated access. **Scraping Every Node With Prometheus** writes the Prometheus scrape configuration for all three pods; a graded lab follows it. **Key Metrics And The Health Endpoint** picks the metrics that matter and shows the health endpoint that load balancers use.
+The module has four parts. **Telemetry And The Metrics Endpoint** shows the `telemetry` stanza that is already on in the playground, reads the metrics endpoint by hand, and explains unauthenticated access. **Scraping Every Node With Prometheus** writes the Prometheus scrape configuration for all three pods; a graded lab follows it. **Key Metrics And The Health Endpoint** picks the metrics that matter and shows the health endpoint that load balancers use. **Telemetry Settings That Matter** covers the remaining `telemetry` settings and what they change.
 
 ## Learning objectives
 
@@ -15,6 +15,7 @@ After this module you can:
 - Write a Prometheus scrape job that reaches every pod, with the `format` parameter.
 - Roll a configuration change out to a Shamir cluster without losing quorum.
 - Name the metrics that show seal state, leadership and Raft health.
+- Explain the `telemetry` settings that change metric names and retention.
 - Use the status codes of `/v1/sys/health` for load balancers and probes.
 
 ## Before you start

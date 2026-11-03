@@ -10,6 +10,7 @@ OpenBao can report its own state as metrics. This section turns that on, scrapes
 - Why every node must be scraped, not only the active one, and how to point Prometheus at each pod.
 - The key metrics: `vault_core_unsealed`, `vault_core_active`, autopilot health and failure tolerance, Raft peers, and lease counts.
 - The health endpoint `/v1/sys/health`, its status codes, and how a load balancer uses them.
+- The remaining `telemetry` settings, server logs, audit devices, Raft and lease metrics, and alert rules.
 
 ## The learning path
 
@@ -20,7 +21,17 @@ The module starts at its landing page, which also launches the playground: a thr
 1. Telemetry And The Metrics Endpoint
 2. Scraping Every Node With Prometheus, followed by the lab **Scrape Every Node With Prometheus**
 3. Key Metrics And The Health Endpoint
-4. Summary
+4. Telemetry Settings That Matter
+5. Summary
+
+### 2. Logs, Audit And Alerts
+
+1. Server Logs And bao monitor
+2. Audit Devices
+3. Health Checks And Probes
+4. Raft And Lease Metrics
+5. Alert Rules, followed by the lab **Audit And Alert On The Cluster**
+6. Summary
 
 ## Section capstone: Alert When A Node Is Sealed
 

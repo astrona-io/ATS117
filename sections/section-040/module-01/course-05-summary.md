@@ -6,6 +6,8 @@ High availability protects OpenBao against lost nodes. This module covered the p
 
 A Raft snapshot is a point-in-time copy of all data in Integrated Storage, saved by the leader with `bao operator raft snapshot save` or a `GET` on `sys/storage/raft/snapshot`. The file stays encrypted with the cluster's keyring. To use it you need what unseals the cluster that made it: the Shamir key shares, or the same key in the same key service. A snapshot belongs outside the cluster, kept apart from those keys.
 
+The same snapshot is available over the HTTP API, which is the way scripts and schedulers take it. A snapshot file should be checked after it is saved, because a backup that was never checked may not be usable.
+
 Restoring a snapshot replaces the whole cluster's data with the data of that moment. When the keys match, the cluster stays unsealed. Everything written since the snapshot is rolled back, including tokens, leases and policies, so changes that must survive are read before the restore and written again afterwards. `-force` skips the key check and belongs to disaster recovery into a different cluster only.
 
 The Helm chart's `OnDelete` strategy means a template change reaches a pod only when you delete it. An upgrade takes a snapshot first, then restarts the standbys one at a time, steps the leader down and restarts it last, checking for three voters after each pod. With auto-unseal the pods unseal themselves, but the order stays the same. The key facts to remember are these:

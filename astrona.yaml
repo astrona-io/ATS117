@@ -21,7 +21,8 @@ training:
     Integrated Storage (Raft), quorum and autopilot, Transit and static
     auto-unseal, cloud KMS plugins, seal migration, telemetry with
     Prometheus and the health endpoint, Raft snapshots and restore, and
-    rolling upgrades. Each module pairs a layered reader with an ungraded
+    rolling upgrades, growing and shrinking a cluster, seal operation,
+    logs, audit and alert rules, and backup automation. Each module pairs a layered reader with an ungraded
     hands-on playground and a graded practice lab. Each section closes with
     an integration capstone.
     Written for OpenBao v2.7.1.
@@ -60,8 +61,9 @@ modules:
     description: >
       Run OpenBao as a three-node cluster on Integrated Storage: Raft, voters
       and quorum, joining nodes with retry_join, autopilot, leader election,
-      standby reads and request forwarding, and what to do when quorum is
-      lost.
+      standby reads and request forwarding, what to do when quorum is
+      lost, autopilot state, growing and shrinking the cluster, and storage
+      settings.
 
     content:
       - type: reading
@@ -103,8 +105,54 @@ modules:
         title: "Failover, Standbys And Lost Quorum"
         path: sections/section-010/module-01/course-03-failover-standbys-and-lost-quorum.md
       - type: reading
+        title: "Autopilot State And Raft Tuning"
+        path: sections/section-010/module-01/course-04-autopilot-state-and-raft-tuning.md
+      - type: reading
         title: Summary
-        path: sections/section-010/module-01/course-04-summary.md
+        path: sections/section-010/module-01/course-05-summary.md
+
+      - type: reading
+        title: "Grow, Shrink And Maintain A Raft Cluster"
+        path: sections/section-010/module-02/course.md
+      - type: reading
+        title: "Addresses And Request Forwarding"
+        path: sections/section-010/module-02/course-01-addresses-and-request-forwarding.md
+      - type: reading
+        title: "Adding A Node"
+        path: sections/section-010/module-02/course-02-adding-a-node.md
+      - type: reading
+        title: "Removing And Replacing Nodes"
+        path: sections/section-010/module-02/course-03-removing-and-replacing-nodes.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Retire A Node And Keep Quorum Safe Lab"
+        path: sections/section-010/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: high-availability
+        task_kind: troubleshooting
+        tags: [raft, remove-peer, list-peers, autopilot, quorum, helm-chart]
+        learning_goals:
+          - Find the dead voter that a scale-down left in the Raft configuration
+          - Remove the peer from Raft and delete the volume it left behind
+          - Prove the cluster has three healthy voters and kept its data
+        resources:
+          - name: "Integrated Storage"
+            url: https://openbao.org/docs/concepts/integrated-storage/
+          - name: "operator raft"
+            url: https://openbao.org/docs/commands/operator/raft/
+      - type: reading
+        title: "Storage Settings And Disk Care"
+        path: sections/section-010/module-02/course-04-storage-settings-and-disk-care.md
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-02/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Grow And Maintain A Raft Cluster"
+        path: sections/section-010/module-02/quiz.yaml
+        pass_score: 70
 
       - type: reading
         title: Question
@@ -136,8 +184,8 @@ modules:
     description: >
       Unseal OpenBao without people entering key shares: recovery keys, the
       Transit seal backed by a second OpenBao, the static seal, cloud KMS
-      seals as plugins, and migrating a running cluster from Shamir to
-      Transit.
+      seals as plugins, migrating a running cluster from Shamir to
+      Transit, rotating the Transit key, and the seal token lifecycle.
 
     content:
       - type: reading
@@ -179,8 +227,60 @@ modules:
           - name: "operator unseal"
             url: https://openbao.org/docs/commands/operator/unseal/
       - type: reading
+        title: "Seal Status And Manual Sealing"
+        path: sections/section-020/module-01/course-04-seal-status-and-manual-sealing.md
+      - type: reading
         title: Summary
-        path: sections/section-020/module-01/course-04-summary.md
+        path: sections/section-020/module-01/course-05-summary.md
+
+      - type: reading
+        title: "Operate The Seal"
+        path: sections/section-020/module-02/course.md
+      - type: reading
+        title: "Rotating The Transit Key"
+        path: sections/section-020/module-02/course-01-rotating-the-transit-key.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Rotate The Transit Key Safely Lab"
+        path: sections/section-020/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: auto-unseal
+        task_kind: build
+        tags: [transit-seal, recovery-keys, static-seal, step-down, ondelete, helm-chart]
+        learning_goals:
+          - Rotate the Transit key autounseal to a new version
+          - Keep min_decryption_version at 1 so the stored root key still decrypts
+          - Prove a restarted pod unseals itself and the data survived
+        resources:
+          - name: "Transit seal"
+            url: https://openbao.org/docs/configuration/seal/transit/
+          - name: "Seal concepts"
+            url: https://openbao.org/docs/concepts/seal/
+      - type: reading
+        title: "The Seal Token Lifecycle"
+        path: sections/section-020/module-02/course-02-the-seal-token-lifecycle.md
+      - type: reading
+        title: "Recovery Keys In Practice"
+        path: sections/section-020/module-02/course-03-recovery-keys-in-practice.md
+      - type: reading
+        title: "The Static Seal"
+        path: sections/section-020/module-02/course-04-the-static-seal.md
+      - type: reading
+        title: "KMS Plugin Seals"
+        path: sections/section-020/module-02/course-05-kms-plugin-seals.md
+      - type: reading
+        title: "Migration Paths And Seal Failures"
+        path: sections/section-020/module-02/course-06-migration-paths-and-seal-failures.md
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-02/course-07-summary.md
+      - type: quiz
+        title: "Knowledge Check: Operate The Seal"
+        path: sections/section-020/module-02/quiz.yaml
+        pass_score: 70
 
       - type: reading
         title: Question
@@ -213,7 +313,8 @@ modules:
       Make OpenBao report its own health: the telemetry stanza, the metrics
       endpoint without a token, scraping every node with Prometheus, the key
       metrics to watch, alerting on a sealed node, and the health endpoint
-      for load balancers.
+      for load balancers, plus server logs, audit devices, Raft and lease
+      metrics, and alert rules.
 
     content:
       - type: reading
@@ -253,8 +354,57 @@ modules:
         title: "Key Metrics And The Health Endpoint"
         path: sections/section-030/module-01/course-03-key-metrics-and-the-health-endpoint.md
       - type: reading
+        title: "Telemetry Settings That Matter"
+        path: sections/section-030/module-01/course-04-telemetry-settings-that-matter.md
+      - type: reading
         title: Summary
-        path: sections/section-030/module-01/course-04-summary.md
+        path: sections/section-030/module-01/course-05-summary.md
+
+      - type: reading
+        title: "Logs, Audit And Alerts"
+        path: sections/section-030/module-02/course.md
+      - type: reading
+        title: "Server Logs And bao monitor"
+        path: sections/section-030/module-02/course-01-server-logs-and-bao-monitor.md
+      - type: reading
+        title: "Audit Devices"
+        path: sections/section-030/module-02/course-02-audit-devices.md
+      - type: reading
+        title: "Health Checks And Probes"
+        path: sections/section-030/module-02/course-03-health-checks-and-probes.md
+      - type: reading
+        title: "Raft And Lease Metrics"
+        path: sections/section-030/module-02/course-04-raft-and-lease-metrics.md
+      - type: reading
+        title: "Alert Rules"
+        path: sections/section-030/module-02/course-05-alert-rules.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Audit And Alert On The Cluster Lab"
+        path: sections/section-030/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: telemetry
+        task_kind: build
+        tags: [telemetry, prometheus, metrics, alerting, health-endpoint]
+        learning_goals:
+          - Enable a file audit device that writes to standard output
+          - Read an audit entry for a request in the log of the active node
+          - Add and load an alert rule on vault_core_active and prove it is healthy
+        resources:
+          - name: "Audit devices"
+            url: https://openbao.org/docs/audit/
+          - name: "Telemetry and metrics"
+            url: https://openbao.org/docs/internals/telemetry/
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-02/course-06-summary.md
+      - type: quiz
+        title: "Knowledge Check: Logs, Audit And Alerts"
+        path: sections/section-030/module-02/quiz.yaml
+        pass_score: 70
 
       - type: reading
         title: Question
@@ -286,7 +436,9 @@ modules:
     description: >
       Keep the data safe and the version current: Raft snapshots, what a
       snapshot needs to be usable, restoring and what a restore rolls back,
-      and rolling upgrades with the OnDelete strategy.
+      rolling upgrades with the OnDelete strategy, the snapshot API, backup
+      tokens, scheduled snapshots, restoring into a new cluster, and upgrade
+      planning.
 
     content:
       - type: reading
@@ -326,8 +478,57 @@ modules:
         title: "Rolling Upgrades"
         path: sections/section-040/module-01/course-03-rolling-upgrades.md
       - type: reading
+        title: "The Snapshot API And Checking A File"
+        path: sections/section-040/module-01/course-04-the-snapshot-api-and-checking-a-file.md
+      - type: reading
         title: Summary
-        path: sections/section-040/module-01/course-04-summary.md
+        path: sections/section-040/module-01/course-05-summary.md
+
+      - type: reading
+        title: "Automate Backups And Plan Upgrades"
+        path: sections/section-040/module-02/course.md
+      - type: reading
+        title: "A Least-Privilege Backup Token"
+        path: sections/section-040/module-02/course-01-a-least-privilege-backup-token.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Create A Backup Token Lab"
+        path: sections/section-040/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: backup
+        task_kind: build
+        tags: [raft-snapshot, restore, periodic-token, helm-chart]
+        learning_goals:
+          - Write a policy that allows a snapshot and nothing else
+          - Create an orphan, periodic token and store it in a Secret
+          - Prove the token can take a snapshot and can neither read secrets nor restore
+        resources:
+          - name: "Raft storage API: snapshots"
+            url: https://openbao.org/docs/api/system/storage/raft/
+          - name: "Tokens"
+            url: https://openbao.org/docs/concepts/tokens/
+      - type: reading
+        title: "Scheduled Snapshots"
+        path: sections/section-040/module-02/course-02-scheduled-snapshots.md
+      - type: reading
+        title: "Restoring Into A New Cluster"
+        path: sections/section-040/module-02/course-03-restoring-into-a-new-cluster.md
+      - type: reading
+        title: "Planning An Upgrade"
+        path: sections/section-040/module-02/course-04-planning-an-upgrade.md
+      - type: reading
+        title: "Drills And Runbooks"
+        path: sections/section-040/module-02/course-05-drills-and-runbooks.md
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-02/course-06-summary.md
+      - type: quiz
+        title: "Knowledge Check: Automate Backups And Plan Upgrades"
+        path: sections/section-040/module-02/quiz.yaml
+        pass_score: 70
 
       - type: reading
         title: Question

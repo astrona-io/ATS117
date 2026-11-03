@@ -1,0 +1,245 @@
+# Knowledge check for section 040, module 02. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats117-040-m02
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-040-module-02
+  title: "Automate Backups And Plan Upgrades"
+placement:
+  position: after
+  reading: sections/section-040/module-02/course-06-summary.md
+questions:
+  - id: ats117-040-m02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Write the backup policy"
+    source_readings:
+      - sections/section-040/module-02/course-01-a-least-privilege-backup-token.md
+    prompt: "Which capability on sys/storage/raft/snapshot does a backup job need?"
+    options:
+      - id: a
+        text: "read only"
+        explanation: "Correct. A snapshot is a read, and a restore is an update on the same path."
+      - id: b
+        text: "read and update"
+        explanation: "Not correct. Update would allow a restore."
+      - id: c
+        text: "sudo"
+        explanation: "Not correct. It is far more than needed."
+      - id: d
+        text: "create"
+        explanation: "Not correct. It is not the capability for a snapshot."
+    correct_option: a
+    explanation: "Correct. A snapshot is a read, and a restore is an update on the same path."
+
+  - id: ats117-040-m02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose the token type for a job"
+    source_readings:
+      - sections/section-040/module-02/course-01-a-least-privilege-backup-token.md
+    prompt: "Why should the backup token be an orphan and periodic?"
+    options:
+      - id: a
+        text: "It is faster than other tokens."
+        explanation: "Not correct. Speed is not a property of these types."
+      - id: b
+        text: "It does not end with its creator and has no maximum lifetime if renewed."
+        explanation: "Correct. A child token ends with its parent, and a normal TTL ends the token."
+      - id: c
+        text: "It cannot be revoked."
+        explanation: "Not correct. Any token can be revoked."
+      - id: d
+        text: "It is allowed to read all secrets."
+        explanation: "Not correct. Policies decide that, not the type."
+    correct_option: b
+    explanation: "Correct. A child token ends with its parent, and a normal TTL ends the token."
+
+  - id: ats117-040-m02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Test the token"
+    source_readings:
+      - sections/section-040/module-02/course-01-a-least-privilege-backup-token.md
+    prompt: "What should a GET on a secret path and a POST on the snapshot path answer with the backup token?"
+    options:
+      - id: a
+        text: "200 for both"
+        explanation: "Not correct. The policy allows neither."
+      - id: b
+        text: "200 for the secret, 403 for the POST"
+        explanation: "Not correct. The policy allows no secret reads."
+      - id: c
+        text: "403 for both"
+        explanation: "Correct. The token can take a snapshot and cannot read a secret or restore."
+      - id: d
+        text: "404 for both"
+        explanation: "Not correct. 404 means the path is missing, not that access is denied."
+    correct_option: c
+    explanation: "Correct. The token can take a snapshot and cannot read a secret or restore."
+
+  - id: ats117-040-m02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a snapshot CronJob"
+    source_readings:
+      - sections/section-040/module-02/course-02-scheduled-snapshots.md
+    prompt: "Why does the job use curl -f?"
+    options:
+      - id: a
+        text: "It follows redirects to the leader."
+        explanation: "Not correct. That is the -L flag."
+      - id: b
+        text: "It encrypts the snapshot."
+        explanation: "Not correct. Snapshots are encrypted by the cluster."
+      - id: c
+        text: "It compresses the file."
+        explanation: "Not correct. curl -f does not compress."
+      - id: d
+        text: "An HTTP error fails the job instead of saving an error page as a snapshot."
+        explanation: "Correct. Without -f, a 403 body is written into the file."
+    correct_option: d
+    explanation: "Correct. Without -f, a 403 body is written into the file."
+
+  - id: ats117-040-m02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose frequency from RPO"
+    source_readings:
+      - sections/section-040/module-02/course-02-scheduled-snapshots.md
+    prompt: "Your recovery point objective is one hour. What does that need?"
+    options:
+      - id: a
+        text: "A snapshot at least every hour."
+        explanation: "Correct. The time between snapshots is the amount of data you can lose."
+      - id: b
+        text: "A snapshot once a day."
+        explanation: "Not correct. Up to a day of changes could be lost."
+      - id: c
+        text: "A restore test once a day."
+        explanation: "Not correct. A test does not reduce data loss."
+      - id: d
+        text: "Three voters."
+        explanation: "Not correct. Voters do not protect against deleted data."
+    correct_option: a
+    explanation: "Correct. The time between snapshots is the amount of data you can lose."
+
+  - id: ats117-040-m02-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Place backups safely"
+    source_readings:
+      - sections/section-040/module-02/course-02-scheduled-snapshots.md
+    prompt: "Where should snapshots be stored?"
+    options:
+      - id: a
+        text: "On a volume in the same cluster."
+        explanation: "Not correct. The backup is lost with the cluster."
+      - id: b
+        text: "In another failure domain, with credentials that can write but not delete."
+        explanation: "Correct. Separate location, separate access, no delete rights for the job."
+      - id: c
+        text: "Next to the unseal keys."
+        explanation: "Not correct. Whoever gets both gets every secret."
+      - id: d
+        text: "In a ConfigMap."
+        explanation: "Not correct. ConfigMaps are small and live in the same cluster."
+    correct_option: b
+    explanation: "Correct. Separate location, separate access, no delete rights for the job."
+
+  - id: ats117-040-m02-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Restore into a new cluster"
+    source_readings:
+      - sections/section-040/module-02/course-03-restoring-into-a-new-cluster.md
+    prompt: "After restoring a snapshot from another cluster, which keys unseal the nodes?"
+    options:
+      - id: a
+        text: "The key shares of the new cluster."
+        explanation: "Not correct. The restored data belongs to the old cluster's key."
+      - id: b
+        text: "No keys; the restore unseals them."
+        explanation: "Not correct. Unseal is still needed."
+      - id: c
+        text: "The key shares of the old cluster."
+        explanation: "Correct. The snapshot holds the old root key, wrapped by the old seal."
+      - id: d
+        text: "The root token of the new cluster."
+        explanation: "Not correct. A token cannot unseal."
+    correct_option: c
+    explanation: "Correct. The snapshot holds the old root key, wrapped by the old seal."
+
+  - id: ats117-040-m02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know what a restore replaces"
+    source_readings:
+      - sections/section-040/module-02/course-03-restoring-into-a-new-cluster.md
+    prompt: "What does a client that holds a token created after the snapshot see after a restore?"
+    options:
+      - id: a
+        text: "Nothing; tokens are kept."
+        explanation: "Not correct. Tokens are part of the restored state."
+      - id: b
+        text: "A longer lease."
+        explanation: "Not correct. Leases roll back too."
+      - id: c
+        text: "A redirect to the old cluster."
+        explanation: "Not correct. There is no redirect."
+      - id: d
+        text: "An invalid token; it must log in again."
+        explanation: "Correct. A restore replaces everything, including tokens and leases."
+    correct_option: d
+    explanation: "Correct. A restore replaces everything, including tokens and leases."
+
+  - id: ats117-040-m02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Plan a rollback"
+    source_readings:
+      - sections/section-040/module-02/course-04-planning-an-upgrade.md
+    prompt: "What is the safe rollback of an upgrade?"
+    options:
+      - id: a
+        text: "Restore the snapshot from before the upgrade into a cluster of the old version."
+        explanation: "Correct. A snapshot taken immediately before is the way back."
+      - id: b
+        text: "Change the image tag back."
+        explanation: "Not correct. Storage may have moved forward."
+      - id: c
+        text: "Delete the new pods."
+        explanation: "Not correct. Nothing reverts the data format."
+      - id: d
+        text: "Run bao operator step-down."
+        explanation: "Not correct. Step-down only moves leadership."
+    correct_option: a
+    explanation: "Correct. A snapshot taken immediately before is the way back."
+
+  - id: ats117-040-m02-q10
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Measure recovery targets"
+    source_readings:
+      - sections/section-040/module-02/course-05-drills-and-runbooks.md
+    prompt: "How do you learn your real recovery time?"
+    options:
+      - id: a
+        text: "Read the documentation of the product."
+        explanation: "Not correct. It cannot know your cluster."
+      - id: b
+        text: "Run a drill and time the restore."
+        explanation: "Correct. A number that was never measured is a guess."
+      - id: c
+        text: "Count the pods."
+        explanation: "Not correct. Pods do not set the time."
+      - id: d
+        text: "Wait for an incident."
+        explanation: "Not correct. That is the situation a drill avoids."
+    correct_option: b
+    explanation: "Correct. A number that was never measured is a guess."

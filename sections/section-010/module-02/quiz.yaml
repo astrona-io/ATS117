@@ -1,0 +1,245 @@
+# Knowledge check for section 010, module 02. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats117-010-m02
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-010-module-02
+  title: "Grow And Maintain A Raft Cluster"
+placement:
+  position: after
+  reading: sections/section-010/module-02/course-05-summary.md
+questions:
+  - id: ats117-010-m02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Tell api_addr from cluster_addr"
+    source_readings:
+      - sections/section-010/module-02/course-01-addresses-and-request-forwarding.md
+    prompt: "Which address do clients use, and which do the nodes use among themselves?"
+    options:
+      - id: a
+        text: "Clients use api_addr (port 8200); nodes use cluster_addr (port 8201)."
+        explanation: "Correct. api_addr is the address for the API and redirects, and cluster_addr is for forwarding and Raft traffic between nodes."
+      - id: b
+        text: "Both use port 8200."
+        explanation: "Not correct. The cluster address is a separate address on its own port."
+      - id: c
+        text: "Clients use cluster_addr and nodes use api_addr."
+        explanation: "Not correct. It is the other way round."
+      - id: d
+        text: "Clients use the port of Raft, which is 9200."
+        explanation: "Not correct. No such port is used by default."
+    correct_option: a
+    explanation: "Correct. api_addr is the address for the API and redirects, and cluster_addr is for forwarding and Raft traffic between nodes."
+
+  - id: ats117-010-m02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain request forwarding"
+    source_readings:
+      - sections/section-010/module-02/course-01-addresses-and-request-forwarding.md
+    prompt: "A client sends a write to a standby and gets a successful answer. What happened?"
+    options:
+      - id: a
+        text: "The standby wrote the data itself and replicated it."
+        explanation: "Not correct. Only the active node accepts writes."
+      - id: b
+        text: "The standby forwarded the request to the active node over the cluster port."
+        explanation: "Correct. Request forwarding sends the request to the active node on port 8201 and returns its answer to the client."
+      - id: c
+        text: "The standby elected itself leader for the write."
+        explanation: "Not correct. Elections do not happen per request."
+      - id: d
+        text: "The client library found the leader and resent the request."
+        explanation: "Not correct. That is a redirect, not forwarding; here the standby did the work."
+    correct_option: b
+    explanation: "Correct. Request forwarding sends the request to the active node on port 8201 and returns its answer to the client."
+
+  - id: ats117-010-m02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a blocked cluster port"
+    source_readings:
+      - sections/section-010/module-02/course-01-addresses-and-request-forwarding.md
+    prompt: "Reads through every node work, but writes through standbys fail. Which cause fits?"
+    options:
+      - id: a
+        text: "Port 8200 is blocked from the clients."
+        explanation: "Not correct. Then reads would fail too."
+      - id: b
+        text: "The Shamir threshold is set too high."
+        explanation: "Not correct. The seal does not affect forwarding."
+      - id: c
+        text: "Port 8201 is blocked between the nodes."
+        explanation: "Correct. Forwarding and replication use the cluster port, so a block there breaks writes through standbys while reads on each node still work."
+      - id: d
+        text: "Autopilot is switched off."
+        explanation: "Not correct. Autopilot does not carry requests."
+    correct_option: c
+    explanation: "Correct. Forwarding and replication use the cluster port, so a block there breaks writes through standbys while reads on each node still work."
+
+  - id: ats117-010-m02-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Add a node to the cluster"
+    source_readings:
+      - sections/section-010/module-02/course-02-adding-a-node.md
+    prompt: "You scaled the StatefulSet from three to four pods with the Shamir seal. What must you do for the new pod to join?"
+    options:
+      - id: a
+        text: "Run bao operator init on it."
+        explanation: "Not correct. That starts a separate cluster."
+      - id: b
+        text: "Nothing; it unseals itself."
+        explanation: "Not correct. Only an auto-unseal does that."
+      - id: c
+        text: "Delete the other pods first."
+        explanation: "Not correct. There is no need to restart the other pods."
+      - id: d
+        text: "Unseal it with the existing key; it joins through retry_join."
+        explanation: "Correct. A new pod with the Shamir seal needs the cluster's unseal key, then it joins as a node."
+    correct_option: d
+    explanation: "Correct. A new pod with the Shamir seal needs the cluster's unseal key, then it joins as a node."
+
+  - id: ats117-010-m02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know why even voter counts add no tolerance"
+    source_readings:
+      - sections/section-010/module-02/course-02-adding-a-node.md
+    prompt: "How many failures can a cluster of four voters survive?"
+    options:
+      - id: a
+        text: "One, the same as three voters."
+        explanation: "Correct. The quorum of four is three. Only one node can fail, so a fourth voter adds cost without tolerance."
+      - id: b
+        text: "Two, because it has one more node."
+        explanation: "Not correct. A majority of four is three, so only one can fail."
+      - id: c
+        text: "Zero, because four is even."
+        explanation: "Not correct. A majority of three still exists after one failure."
+      - id: d
+        text: "Three, because one voter is enough."
+        explanation: "Not correct. Quorum needs a majority, not one node."
+    correct_option: a
+    explanation: "Correct. The quorum of four is three. Only one node can fail, so a fourth voter adds cost without tolerance."
+
+  - id: ats117-010-m02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Retire a node in the right order"
+    source_readings:
+      - sections/section-010/module-02/course-03-removing-and-replacing-nodes.md
+    prompt: "What is the correct order to retire the pod openbao-3?"
+    options:
+      - id: a
+        text: "Scale down, then run remove-peer if it is still listed."
+        explanation: "Not correct. A dead voter stays in the quorum calculation meanwhile."
+      - id: b
+        text: "Remove it from Raft with remove-peer, scale down, then delete its volume claim."
+        explanation: "Correct. Raft must forget the node first. Then the pod stops, and the volume is cleaned up last."
+      - id: c
+        text: "Delete the claim first, then scale down."
+        explanation: "Not correct. The node would fail while still part of the configuration."
+      - id: d
+        text: "Only scale down; Raft forgets the node itself."
+        explanation: "Not correct. The peer stays in the Raft configuration until removed."
+    correct_option: b
+    explanation: "Correct. Raft must forget the node first. Then the pod stops, and the volume is cleaned up last."
+
+  - id: ats117-010-m02-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Spot the danger of removing a voter"
+    source_readings:
+      - sections/section-010/module-02/course-03-removing-and-replacing-nodes.md
+    prompt: "You remove a healthy voter from a three-node cluster. What is the failure tolerance afterwards?"
+    options:
+      - id: a
+        text: "One, because two voters can lose one."
+        explanation: "Not correct. Quorum of two is two."
+      - id: b
+        text: "Two, because the data is replicated."
+        explanation: "Not correct. Replication does not change the quorum rule."
+      - id: c
+        text: "Zero, because two voters need both to be up."
+        explanation: "Correct. With two voters the majority is two, so the next failure stops the cluster."
+      - id: d
+        text: "Unchanged, because standbys do not vote."
+        explanation: "Not correct. Voters count; removing one lowers the quorum base."
+    correct_option: c
+    explanation: "Correct. With two voters the majority is two, so the next failure stops the cluster."
+
+  - id: ats117-010-m02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use storage settings and watch the disk"
+    source_readings:
+      - sections/section-010/module-02/course-04-storage-settings-and-disk-care.md
+    prompt: "Why is it wrong to watch the disk of only one node?"
+    options:
+      - id: a
+        text: "Only the leader stores data."
+        explanation: "Not correct. Every node holds the full data."
+      - id: b
+        text: "Standbys never write to disk."
+        explanation: "Not correct. Standbys apply the log to their own storage."
+      - id: c
+        text: "Disk use differs by design, so one node is enough."
+        explanation: "Not correct. The data is the same, so a full disk anywhere is a risk."
+      - id: d
+        text: "Every node stores the same data, and each volume can fill up on its own."
+        explanation: "Correct. Each node has its own volume, and a full one stops that node. Check all of them."
+    correct_option: d
+    explanation: "Correct. Each node has its own volume, and a full one stops that node. Check all of them."
+
+  - id: ats117-010-m02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Grow a volume safely"
+    source_readings:
+      - sections/section-010/module-02/course-04-storage-settings-and-disk-care.md
+    prompt: "How do you grow the volumes of a three-node cluster?"
+    options:
+      - id: a
+        text: "One node at a time: resize, check list-peers, then the next."
+        explanation: "Correct. Changing one node at a time keeps quorum intact if a resize goes wrong."
+      - id: b
+        text: "All claims at once, to save time."
+        explanation: "Not correct. A mistake would then hit every node."
+      - id: c
+        text: "Delete the claims and let Kubernetes recreate them."
+        explanation: "Not correct. That destroys the data on that node."
+      - id: d
+        text: "Resize only the leader; standbys copy it."
+        explanation: "Not correct. Each node has its own volume."
+    correct_option: a
+    explanation: "Correct. Changing one node at a time keeps quorum intact if a resize goes wrong."
+
+  - id: ats117-010-m02-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Do not change a node ID"
+    source_readings:
+      - sections/section-010/module-02/course-04-storage-settings-and-disk-care.md
+    prompt: "What happens if you change node_id of an existing node?"
+    options:
+      - id: a
+        text: "Nothing; the ID is only a label."
+        explanation: "Not correct. Raft identifies servers by ID."
+      - id: b
+        text: "Raft treats it as a different server."
+        explanation: "Correct. The node ID identifies the server in the Raft configuration, so a new ID looks like a new server and leaves the old one behind."
+      - id: c
+        text: "The node becomes the leader."
+        explanation: "Not correct. The ID has no relation to leadership."
+      - id: d
+        text: "The data is migrated to the new ID."
+        explanation: "Not correct. No migration takes place."
+    correct_option: b
+    explanation: "Correct. The node ID identifies the server in the Raft configuration, so a new ID looks like a new server and leaves the old one behind."

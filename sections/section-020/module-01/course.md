@@ -4,7 +4,7 @@ Delete one pod of the cluster in your playground and it comes back sealed. Until
 
 Auto-unseal hands that job to a key service. At start, OpenBao sends its encrypted root key to the service, gets it back decrypted, and unseals itself. Keep one sentence in mind: **with auto-unseal, OpenBao is only as available as its key service, and the key shares become recovery keys that can no longer unseal.**
 
-The module has three parts. **Seals, Auto-Unseal And Recovery Keys** explains what a seal protects, which seals OpenBao 2.7 has built in, and why the cloud seals are now plugins. **The Transit Seal** looks at the unsealer in your playground: its Transit key, the policy and the token the cluster will use. **Migrating From Shamir To Transit** walks through the documented migration on the running cluster; a graded lab follows it.
+The module has four parts. **Seals, Auto-Unseal And Recovery Keys** explains what a seal protects, which seals OpenBao 2.7 has built in, and why the cloud seals are now plugins. **The Transit Seal** looks at the unsealer in your playground: its Transit key, the policy and the token the cluster will use. **Migrating From Shamir To Transit** walks through the documented migration on the running cluster; a graded lab follows it. **Seal Status And Manual Sealing** reads `bao status` for seal fields and shows what sealing a node on purpose does.
 
 ## Learning objectives
 
@@ -15,6 +15,7 @@ After this module you can:
 - Name the built-in seals of OpenBao 2.7 and configure a cloud seal as a KMS plugin.
 - Configure the Transit seal with a least-privilege, orphan, periodic token from a Kubernetes Secret.
 - Migrate a running cluster from Shamir to Transit with `bao operator unseal -migrate`.
+- Read the seal fields of `bao status` and explain what `bao operator seal` does.
 - Find why a pod cannot auto-unseal.
 
 ## Before you start

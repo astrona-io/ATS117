@@ -1,0 +1,245 @@
+# Knowledge check for section 030, module 02. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats117-030-m02
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-030-module-02
+  title: "Logs, Audit And Alerts"
+placement:
+  position: after
+  reading: sections/section-030/module-02/course-06-summary.md
+questions:
+  - id: ats117-030-m02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Locate the operational log"
+    source_readings:
+      - sections/section-030/module-02/course-01-server-logs-and-bao-monitor.md
+    prompt: "Where do you read the operational log of an OpenBao pod on Kubernetes?"
+    options:
+      - id: a
+        text: "In the container log of that pod, with kubectl logs."
+        explanation: "Correct. Each node writes its own log to standard error, which the container runtime collects."
+      - id: b
+        text: "In the audit device only."
+        explanation: "Not correct. The audit log records client requests, not server behaviour."
+      - id: c
+        text: "In the Raft snapshot."
+        explanation: "Not correct. Snapshots hold data, not logs."
+      - id: d
+        text: "In one shared log of the whole cluster."
+        explanation: "Not correct. Each node logs separately."
+    correct_option: a
+    explanation: "Correct. Each node writes its own log to standard error, which the container runtime collects."
+
+  - id: ats117-030-m02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use bao monitor"
+    source_readings:
+      - sections/section-030/module-02/course-01-server-logs-and-bao-monitor.md
+    prompt: "What does bao monitor -log-level=debug do?"
+    options:
+      - id: a
+        text: "Changes the configured log level of the cluster for good."
+        explanation: "Not correct. The server level is unchanged afterwards."
+      - id: b
+        text: "Streams the debug log of the node you connect to, until you stop it."
+        explanation: "Correct. The stream is read from one node and ends when the command stops."
+      - id: c
+        text: "Sends debug logs to Prometheus."
+        explanation: "Not correct. It streams to your terminal."
+      - id: d
+        text: "Restarts the node in debug mode."
+        explanation: "Not correct. No restart is involved."
+    correct_option: b
+    explanation: "Correct. The stream is read from one node and ends when the command stops."
+
+  - id: ats117-030-m02-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe what an audit log holds"
+    source_readings:
+      - sections/section-030/module-02/course-02-audit-devices.md
+    prompt: "How does the audit log show a secret value?"
+    options:
+      - id: a
+        text: "In the clear, so investigators can read it."
+        explanation: "Not correct. Only log_raw does that, and it is unsafe."
+      - id: b
+        text: "It leaves values out completely."
+        explanation: "Not correct. Hashes are written so values can be matched."
+      - id: c
+        text: "As a salted HMAC hash, not in the clear."
+        explanation: "Correct. Hashes let a person who knows a value find it, without the log revealing it."
+      - id: d
+        text: "Encrypted with the Transit key."
+        explanation: "Not correct. Values are hashed, not encrypted."
+    correct_option: c
+    explanation: "Correct. Hashes let a person who knows a value find it, without the log revealing it."
+
+  - id: ats117-030-m02-q04
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Know what a failing audit device does"
+    source_readings:
+      - sections/section-030/module-02/course-02-audit-devices.md
+    prompt: "What happens when every enabled audit device fails to write?"
+    options:
+      - id: a
+        text: "Requests continue and are not logged."
+        explanation: "Not correct. The server protects the audit trail."
+      - id: b
+        text: "The cluster seals itself."
+        explanation: "Not correct. It stays unsealed but refuses requests."
+      - id: c
+        text: "The operational log takes over."
+        explanation: "Not correct. It does not replace the audit trail."
+      - id: d
+        text: "The server refuses requests."
+        explanation: "Correct. This is why a production cluster enables at least two devices."
+    correct_option: d
+    explanation: "Correct. This is why a production cluster enables at least two devices."
+
+  - id: ats117-030-m02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Enable the right device for Kubernetes"
+    source_readings:
+      - sections/section-030/module-02/course-02-audit-devices.md
+    prompt: "Which command writes audit entries to the container log?"
+    options:
+      - id: a
+        text: "bao audit enable file file_path=stdout"
+        explanation: "Correct. The file device with file_path=stdout puts entries into the container log."
+      - id: b
+        text: "bao audit enable syslog stdout"
+        explanation: "Not correct. Syslog writes to the local syslog."
+      - id: c
+        text: "bao audit enable log level=audit"
+        explanation: "Not correct. There is no such device type."
+      - id: d
+        text: "bao write sys/monitor/audit enabled=true"
+        explanation: "Not correct. That path does not enable a device."
+    correct_option: a
+    explanation: "Correct. The file device with file_path=stdout puts entries into the container log."
+
+  - id: ats117-030-m02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read health status codes"
+    source_readings:
+      - sections/section-030/module-02/course-03-health-checks-and-probes.md
+    prompt: "Which codes do the active node, a standby and a sealed node answer on /v1/sys/health by default?"
+    options:
+      - id: a
+        text: "200, 200 and 503"
+        explanation: "Not correct. A standby answers 429 unless standbyok is set."
+      - id: b
+        text: "200, 429 and 503"
+        explanation: "Correct. The active node is 200, a standby is 429 and a sealed node is 503."
+      - id: c
+        text: "200, 503 and 429"
+        explanation: "Not correct. Sealed is 503 and standby is 429."
+      - id: d
+        text: "204, 429 and 501"
+        explanation: "Not correct. 501 means not initialized."
+    correct_option: b
+    explanation: "Correct. The active node is 200, a standby is 429 and a sealed node is 503."
+
+  - id: ats117-030-m02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Change codes with parameters"
+    source_readings:
+      - sections/section-030/module-02/course-03-health-checks-and-probes.md
+    prompt: "Which parameter makes a standby answer 200?"
+    options:
+      - id: a
+        text: "activecode=429"
+        explanation: "Not correct. That changes the code of the active node."
+      - id: b
+        text: "sealedcode=200"
+        explanation: "Not correct. That changes the code of a sealed node."
+      - id: c
+        text: "standbyok=true"
+        explanation: "Correct. standbyok=true treats a healthy standby as healthy."
+      - id: d
+        text: "perfstandbyok=false"
+        explanation: "Not correct. That is not the parameter for standbys."
+    correct_option: c
+    explanation: "Correct. standbyok=true treats a healthy standby as healthy."
+
+  - id: ats117-030-m02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pick the metric that warns early"
+    source_readings:
+      - sections/section-030/module-02/course-04-raft-and-lease-metrics.md
+    prompt: "Which alert warns that the next failure would stop the cluster?"
+    options:
+      - id: a
+        text: "vault_core_unsealed == 1"
+        explanation: "Not correct. That is true in a healthy cluster."
+      - id: b
+        text: "vault_expire_num_leases > 0"
+        explanation: "Not correct. Leases are normal."
+      - id: c
+        text: "sum(vault_core_active) == 1"
+        explanation: "Not correct. That is the healthy state."
+      - id: d
+        text: "vault_autopilot_failure_tolerance < 1"
+        explanation: "Correct. Failure tolerance falls to zero before the cluster is down."
+    correct_option: d
+    explanation: "Correct. Failure tolerance falls to zero before the cluster is down."
+
+  - id: ats117-030-m02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Alert on a counter correctly"
+    source_readings:
+      - sections/section-030/module-02/course-04-raft-and-lease-metrics.md
+    prompt: "How do you alert on audit failures?"
+    options:
+      - id: a
+        text: "increase(vault_audit_log_request_failure[5m]) > 0"
+        explanation: "Correct. A counter must be read as a rate or an increase over time."
+      - id: b
+        text: "vault_audit_log_request_failure > 0 for ever"
+        explanation: "Not correct. A counter never goes back down."
+      - id: c
+        text: "vault_audit_log_request_failure == 0"
+        explanation: "Not correct. That is the healthy state."
+      - id: d
+        text: "up == 1"
+        explanation: "Not correct. That shows only that the target answers."
+    correct_option: a
+    explanation: "Correct. A counter must be read as a rate or an increase over time."
+
+  - id: ats117-030-m02-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Cover a node that is gone"
+    source_readings:
+      - sections/section-030/module-02/course-05-alert-rules.md
+    prompt: "Why does a rule on up{job=\"openbao\"} == 0 belong in the set?"
+    options:
+      - id: a
+        text: "A sealed node reports up as 0."
+        explanation: "Not correct. A sealed node still answers the scrape."
+      - id: b
+        text: "A node that is down sends no metrics, so the other rules see nothing."
+        explanation: "Correct. Only up shows the silence of a missing target."
+      - id: c
+        text: "It replaces the sealed-node alert."
+        explanation: "Not correct. The two cover different failures."
+      - id: d
+        text: "It measures the Raft commit time."
+        explanation: "Not correct. It only shows scrape success."
+    correct_option: b
+    explanation: "Correct. Only up shows the silence of a missing target."

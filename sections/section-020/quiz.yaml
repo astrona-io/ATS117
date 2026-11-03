@@ -243,3 +243,26 @@ questions:
         explanation: "Not correct. Unsealing does not change leadership."
     correct_option: b
     explanation: "Correct. The flag marks the share as part of a migration."
+
+  - id: ats117-020-q11
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read the seal status"
+    source_readings:
+      - sections/section-020/module-01/course-04-seal-status-and-manual-sealing.md
+    prompt: "Which bao status fields appear with an auto-unseal and not with Shamir?"
+    options:
+      - id: a
+        text: "Total Shares and Threshold."
+        explanation: "Not correct. Those belong to the Shamir seal."
+      - id: b
+        text: "Unseal Progress."
+        explanation: "Not correct. That counts Shamir shares during an unseal."
+      - id: c
+        text: "Initialized."
+        explanation: "Not correct. It shows with every seal."
+      - id: d
+        text: "Recovery Seal Type and the recovery share counts."
+        explanation: "Correct. An auto-unseal reports recovery fields because recovery keys replace unseal keys."
+    correct_option: d
+    explanation: "Correct. An auto-unseal reports recovery fields because recovery keys replace unseal keys."

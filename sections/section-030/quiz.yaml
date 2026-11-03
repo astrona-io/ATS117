@@ -243,3 +243,26 @@ questions:
         explanation: "Not correct. 501 means not initialized."
     correct_option: b
     explanation: "Correct. 429 means unsealed and standby. standbyok=true makes it 200."
+
+  - id: ats117-030-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Set telemetry retention"
+    source_readings:
+      - sections/section-030/module-01/course-04-telemetry-settings-that-matter.md
+    prompt: "What must be true of prometheus_retention_time?"
+    options:
+      - id: a
+        text: "It must be 0 for Prometheus to work."
+        explanation: "Not correct. Zero turns the Prometheus output off."
+      - id: b
+        text: "It must equal the lease TTL."
+        explanation: "Not correct. They are unrelated."
+      - id: c
+        text: "It must be shorter than the scrape interval."
+        explanation: "Not correct. Metrics would expire before they are scraped."
+      - id: d
+        text: "It must be longer than the scrape interval."
+        explanation: "Correct. A retention shorter than the scrape interval leaves gaps."
+    correct_option: d
+    explanation: "Correct. A retention shorter than the scrape interval leaves gaps."

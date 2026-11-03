@@ -10,6 +10,8 @@ OpenBao 2.7 builds in four seals: Shamir, Transit, static and KMIP. Since v2.7.0
 
 The Transit seal uses the Transit engine of a second OpenBao server. It needs a key that is never deleted, a policy limited to `update` on that key's encrypt and decrypt paths, and an orphan, periodic token. The Helm chart passes the token as `BAO_TOKEN` from a Kubernetes Secret, which also makes it the default token inside the pod.
 
+`bao status` shows the seal type, whether the node is initialized and sealed, and the recovery seal fields. `bao operator seal` seals a node on purpose; take care with it on a running cluster, because the node then needs the unseal step again or its key service.
+
 Seal migration follows a fixed order on an Integrated Storage cluster: add the new seal to the configuration, restart each standby and unseal it with `-migrate`, step the active node down so a migrated node performs the migration, then restart the old active node, which auto-unseals. The key facts to remember are these:
 
 - With auto-unseal, OpenBao is only as available as its key service.

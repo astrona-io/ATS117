@@ -1,0 +1,245 @@
+# Knowledge check for section 020, module 02. Listed in astrona.yaml as a `type: quiz` entry after the module summary.
+schema_version: 1
+kind: question_bank
+id: ats117-020-m02
+course_id: ATS117
+exam_code: OPENBAO
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-020-module-02
+  title: "Operate The Seal"
+placement:
+  position: after
+  reading: sections/section-020/module-02/course-07-summary.md
+questions:
+  - id: ats117-020-m02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain Transit key versions"
+    source_readings:
+      - sections/section-020/module-02/course-01-rotating-the-transit-key.md
+    prompt: "What does rotating the Transit key autounseal do?"
+    options:
+      - id: a
+        text: "It adds a new version; older versions can still decrypt."
+        explanation: "Correct. A rotation adds a key version. New encryption uses it, and old versions keep working for data they protect."
+      - id: b
+        text: "It replaces the key and old data becomes unreadable."
+        explanation: "Not correct. Old versions stay available."
+      - id: c
+        text: "It re-encrypts the root key at once."
+        explanation: "Not correct. The stored root key is not re-encrypted by a rotation."
+      - id: d
+        text: "It restarts the unsealer."
+        explanation: "Not correct. Rotation is an API call, not a restart."
+    correct_option: a
+    explanation: "Correct. A rotation adds a key version. New encryption uses it, and old versions keep working for data they protect."
+
+  - id: ats117-020-m02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know the setting not to change"
+    source_readings:
+      - sections/section-020/module-02/course-01-rotating-the-transit-key.md
+    prompt: "Why must min_decryption_version stay at 1 right after a rotation?"
+    options:
+      - id: a
+        text: "Version 1 is faster than version 2."
+        explanation: "Not correct. Speed is not the issue."
+      - id: b
+        text: "The stored root key was encrypted with version 1 and must still decrypt."
+        explanation: "Correct. If version 1 stops decrypting, the next pod that restarts cannot unseal."
+      - id: c
+        text: "The setting is read-only."
+        explanation: "Not correct. It can be changed, which is the danger."
+      - id: d
+        text: "It controls how often the key rotates."
+        explanation: "Not correct. It controls which versions may decrypt."
+    correct_option: b
+    explanation: "Correct. If version 1 stops decrypting, the next pod that restarts cannot unseal."
+
+  - id: ats117-020-m02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Test the seal after a change"
+    source_readings:
+      - sections/section-020/module-02/course-01-rotating-the-transit-key.md
+    prompt: "What is the right proof that the seal still works after a rotation?"
+    options:
+      - id: a
+        text: "Read the key from the unsealer."
+        explanation: "Not correct. That proves the key exists, not that the cluster can use it."
+      - id: b
+        text: "Check that the running pods are unsealed."
+        explanation: "Not correct. A running pod does not need the key."
+      - id: c
+        text: "Restart a standby and see it unseal itself."
+        explanation: "Correct. Only a restart makes a pod ask the key service again."
+      - id: d
+        text: "Check the Helm release status."
+        explanation: "Not correct. Helm does not know the seal state."
+    correct_option: c
+    explanation: "Correct. Only a restart makes a pod ask the key service again."
+
+  - id: ats117-020-m02-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe the seal token"
+    source_readings:
+      - sections/section-020/module-02/course-02-the-seal-token-lifecycle.md
+    prompt: "Which properties should the seal token have?"
+    options:
+      - id: a
+        text: "A child of the root token with a 1-hour TTL."
+        explanation: "Not correct. A child dies with its parent, and a TTL ends the token."
+      - id: b
+        text: "The root token itself."
+        explanation: "Not correct. It would make the Secret the key to the unsealer."
+      - id: c
+        text: "A batch token with no policies."
+        explanation: "Not correct. It could not call the Transit paths."
+      - id: d
+        text: "Orphan, periodic, with only the autounseal policy."
+        explanation: "Correct. An orphan, periodic token survives its creator, does not hit a maximum lifetime and cannot do more than encrypt and decrypt."
+    correct_option: d
+    explanation: "Correct. An orphan, periodic token survives its creator, does not hit a maximum lifetime and cannot do more than encrypt and decrypt."
+
+  - id: ats117-020-m02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Find when a broken token shows"
+    source_readings:
+      - sections/section-020/module-02/course-02-the-seal-token-lifecycle.md
+    prompt: "The seal token was revoked an hour ago. When do you first see a problem?"
+    options:
+      - id: a
+        text: "When a pod restarts and tries to unseal."
+        explanation: "Correct. Unsealed pods keep working, so the fault surfaces at the next restart."
+      - id: b
+        text: "At once; all pods seal themselves."
+        explanation: "Not correct. Running pods keep the root key in memory."
+      - id: c
+        text: "Never, because pods cache the token for ever."
+        explanation: "Not correct. A new start needs a working token."
+      - id: d
+        text: "When the unsealer restarts."
+        explanation: "Not correct. The unsealer does not use this token."
+    correct_option: a
+    explanation: "Correct. Unsealed pods keep working, so the fault surfaces at the next restart."
+
+  - id: ats117-020-m02-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use recovery keys correctly"
+    source_readings:
+      - sections/section-020/module-02/course-03-recovery-keys-in-practice.md
+    prompt: "What can the recovery keys do on an auto-unsealed cluster?"
+    options:
+      - id: a
+        text: "Unseal a node if the key service is down."
+        explanation: "Not correct. Recovery keys cannot unseal."
+      - id: b
+        text: "Authorize actions such as generating a root token and rekeying; they cannot unseal."
+        explanation: "Correct. Recovery keys authorize special operations; the key service does the unsealing."
+      - id: c
+        text: "Decrypt snapshots."
+        explanation: "Not correct. Snapshots need the seal's key."
+      - id: d
+        text: "Replace the seal token."
+        explanation: "Not correct. The token comes from the unsealer."
+    correct_option: b
+    explanation: "Correct. Recovery keys authorize special operations; the key service does the unsealing."
+
+  - id: ats117-020-m02-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Rekey the recovery keys"
+    source_readings:
+      - sections/section-020/module-02/course-03-recovery-keys-in-practice.md
+    prompt: "Which flag makes operator rekey work on the recovery keys?"
+    options:
+      - id: a
+        text: "-recovery=true"
+        explanation: "Not correct. No such flag exists."
+      - id: b
+        text: "-seal=transit"
+        explanation: "Not correct. The seal type is not an option of rekey."
+      - id: c
+        text: "-target=recovery"
+        explanation: "Correct. Without -target=recovery, the command talks about the unseal key set."
+      - id: d
+        text: "-force"
+        explanation: "Not correct. It does not select the key set."
+    correct_option: c
+    explanation: "Correct. Without -target=recovery, the command talks about the unseal key set."
+
+  - id: ats117-020-m02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know the static seal fields"
+    source_readings:
+      - sections/section-020/module-02/course-04-the-static-seal.md
+    prompt: "How do you rotate a static seal key?"
+    options:
+      - id: a
+        text: "Replace current_key and restart."
+        explanation: "Not correct. Data wrapped with the old key could no longer be read."
+      - id: b
+        text: "Delete the Secret and recreate it."
+        explanation: "Not correct. The server needs both keys during the change."
+      - id: c
+        text: "Run bao operator rekey."
+        explanation: "Not correct. Rekey changes recovery or unseal shares, not the static key."
+      - id: d
+        text: "Set the new key as current_key and move the old one to previous_key with its ID."
+        explanation: "Correct. Both keys are present during the change so the server can still read what the old key protected."
+    correct_option: d
+    explanation: "Correct. Both keys are present during the change so the server can still read what the old key protected."
+
+  - id: ats117-020-m02-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Declare a KMS plugin seal"
+    source_readings:
+      - sections/section-020/module-02/course-05-kms-plugin-seals.md
+    prompt: "What must match for a plugin seal to start?"
+    options:
+      - id: a
+        text: "The name in the plugin \"kms\" block and the name of the seal block."
+        explanation: "Correct. The server finds the plugin for a seal by the name used in both blocks."
+      - id: b
+        text: "The pod name and the key name."
+        explanation: "Not correct. They are not linked."
+      - id: c
+        text: "The cluster name and the region."
+        explanation: "Not correct. They are not linked."
+      - id: d
+        text: "The Helm release and the namespace."
+        explanation: "Not correct. They are not linked."
+    correct_option: a
+    explanation: "Correct. The server finds the plugin for a seal by the name used in both blocks."
+
+  - id: ats117-020-m02-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Choose a migration path"
+    source_readings:
+      - sections/section-020/module-02/course-06-migration-paths-and-seal-failures.md
+    prompt: "Why is the old seal marked disabled = \"true\" during an auto-unseal to auto-unseal migration?"
+    options:
+      - id: a
+        text: "It turns the old seal off for good at once."
+        explanation: "Not correct. It is still used for the decrypt step."
+      - id: b
+        text: "The server needs it to decrypt the root key while moving to the new seal."
+        explanation: "Correct. The disabled seal describes the one being left, so the server can still unwrap the root key."
+      - id: c
+        text: "It hides the seal from the logs."
+        explanation: "Not correct. It has no effect on logging."
+      - id: d
+        text: "It makes the migration run without a restart."
+        explanation: "Not correct. Pods are still restarted."
+    correct_option: b
+    explanation: "Correct. The disabled seal describes the one being left, so the server can still unwrap the root key."
