@@ -14,7 +14,7 @@
 training:
   id: ATS117
   title: "OpenBao: Enterprise Operations, Auto-Unseal & HA Clusters"
-  maturity: draft
+  maturity: alpha
   description: >
     Training material covering the Enterprise Operations, Auto-Unseal & HA
     Clusters domain of the OpenBao training path: a three-node cluster on
