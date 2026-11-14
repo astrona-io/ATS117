@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://astrona.io/courses/openbao">
+    <img src="https://astrona.io/courses/openbao/domains/ATS117.svg" alt="ATS117: Enterprise Operations, Auto-Unseal & HA Clusters, part of the OpenBao course on Astrona" width="100%">
+  </a>
+</p>
+
 # ATS117 — Enterprise Operations, Auto-Unseal & HA Clusters (OpenBao)
 
 Course material for the **Enterprise Operations, Auto-Unseal & HA Clusters**
